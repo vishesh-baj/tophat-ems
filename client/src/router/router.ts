@@ -54,5 +54,4 @@ export const routes = [
     path: PATHS.register,
     Element: RegisterPage,
   },
-  
 ];
