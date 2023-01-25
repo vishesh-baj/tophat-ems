@@ -10,22 +10,7 @@ import {
   ReportsPage,
 } from "../pages/";
 
-export const routes = [
-  {
-    key: PATHS.root,
-    path: PATHS.root,
-    Element: LandingPage,
-  },
-  {
-    key: PATHS.login,
-    path: PATHS.login,
-    Element: LoginPage,
-  },
-  {
-    key: PATHS.register,
-    path: PATHS.register,
-    Element: RegisterPage,
-  },
+export const authRoutes = [
   {
     key: PATHS.dashboard,
     path: PATHS.dashboard,
@@ -51,4 +36,23 @@ export const routes = [
     path: PATHS.error,
     Element: ErrorPage,
   },
+];
+
+export const routes = [
+  {
+    key: PATHS.root,
+    path: PATHS.root,
+    Element: LandingPage,
+  },
+  {
+    key: PATHS.login,
+    path: PATHS.login,
+    Element: LoginPage,
+  },
+  {
+    key: PATHS.register,
+    path: PATHS.register,
+    Element: RegisterPage,
+  },
+  
 ];
