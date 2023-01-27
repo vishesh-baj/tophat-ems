@@ -10,6 +10,7 @@ import {
   ReportsPage,
 } from "../pages/";
 
+
 export const authRoutes = [
   {
     key: PATHS.dashboard,
