@@ -1,9 +1,23 @@
-import React from "react";
+import React, { createContext, useState } from "react";
 
-type Props = {};
+interface AppContextProps {
+  theme: string;
+  setTheme: (value: string) => void;
+}
 
-const AppContext = (props: Props) => {
-  return <div>AppContext</div>;
+export const AppContext = createContext<AppContextProps>({
+  theme: "light",
+  setTheme: () => {},
+});
+
+const AppContextProvider: React.FC = ({ children }) => {
+  const [theme, setTheme] = useState("light");
+
+  return (
+    <AppContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </AppContext.Provider>
+  );
 };
 
-export default AppContext;
+export default AppContextProvider;

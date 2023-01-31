@@ -3,6 +3,7 @@ const router = express.Router();
 import loginController from "../controllers/loginController";
 const { check } = require("express-validator/check");
 
+// login route
 router.post(
   "/login",
   [

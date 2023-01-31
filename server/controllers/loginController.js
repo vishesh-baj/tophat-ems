@@ -1,6 +1,7 @@
 import { validationResult } from "express-validator";
 import { JsonWebTokenError } from "jsonwebtoken";
 import UserModal from "../schemas/Users";
+
 // login controller
 const loginController = async (req, res) => {
   const errors = validationResult(req);
