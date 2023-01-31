@@ -20,6 +20,7 @@ interface Props {
   children: React.ReactNode;
 }
 
+// AppProvider isspecific to  the app context
 const AppProvider: Props = ({ children }) => {
   // Use the useState hook to create a state for the authToken and user
   const [authToken, setAuthToken] = useState("");

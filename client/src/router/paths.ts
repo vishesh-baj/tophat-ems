@@ -7,4 +7,5 @@ export const PATHS = {
   reports: "/reports",
   candidates: "/candidates",
   error: "/page-not-found",
+  
 };

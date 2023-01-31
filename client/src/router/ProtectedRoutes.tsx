@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Route, RouteProps, useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+
 import {
   AdminDashboardLayout,
   DevDashboardLayout,
@@ -13,8 +14,7 @@ type Props = RouteProps {
   userObject: {
     role: string;
   };
-}
-
+} 
 
 
 
@@ -34,10 +34,14 @@ const ProtectedRoute: React.FC<Props> = ({ token, userObject, ...rest }) => {
   if (userObject.role === "hr") {
     return <Route {...rest} component={HrDashboardLayout} />;
   }
-
+  if(userObject.role === "dev"){
+    return <Route {...rest} component={DevDashboardLayout}/>
+  }
   navigate("/");
   return null;
 };
 
 export default ProtectedRoute;
+
+
 
