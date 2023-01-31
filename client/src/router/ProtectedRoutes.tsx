@@ -14,7 +14,6 @@ type Props = RouteProps {
     role: string;
   };
 };
-
 const ProtectedRoute: React.FC<Props> = ({ token, userObject, ...rest }) => {
   const { authToken } = useContext(AppContext);
   const navigate = useNavigate();
@@ -23,7 +22,7 @@ const ProtectedRoute: React.FC<Props> = ({ token, userObject, ...rest }) => {
     navigate("/login");
     return null;
   }
-
+  
   if (userObject.role === "admin") {
     return <Route {...rest} component={AdminDashboardLayout} />;
   }

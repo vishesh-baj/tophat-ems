@@ -21,4 +21,3 @@ const LoginPage = (props: Props) => {
 };
 
 export default LoginPage;
-

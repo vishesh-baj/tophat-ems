@@ -7,5 +7,12 @@ export const PATHS = {
   reports: "/reports",
   candidates: "/candidates",
   error: "/page-not-found",
-  
+  hrDashboard: "/dashobard/hr-dashboard",
+  devDashbnoard: "/dashboard/dev-dashboard",
+  adminDashboard: "/dashboard/admin-dashboard",
+  adminErrorPage: "/dashboard/error-admin-dashboard",
+  hrErrorPage: "/dashboard/error-hr-dashboard",
+  devErrorPage: "/dashboard/error-dev-dashboard",
+  employeesDashboard: "/dashboard/employee-dashboard",
+  candidateDashbnoard: "/dashboard/candidate-dashboard",
 };
