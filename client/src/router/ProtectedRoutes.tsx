@@ -16,6 +16,8 @@ type Props = RouteProps {
 }
 
 
+
+
 const ProtectedRoute: React.FC<Props> = ({ token, userObject, ...rest }) => {
   const { authToken } = useContext(AppContext);
   const navigate = useNavigate();
