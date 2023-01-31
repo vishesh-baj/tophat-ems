@@ -7,6 +7,7 @@ import {
   HrDashboardLayout,
 } from "../layout";
 
+// added routeProps
 type Props = RouteProps {
   token: string;
   userObject: {
