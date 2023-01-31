@@ -20,7 +20,7 @@ const loginController = async (req, res) => {
     }
     const payload = {
       user: {
-        id: user.id,
+        id: user.userId,
         role: user.role,
       },
     };

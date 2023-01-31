@@ -4,6 +4,7 @@ interface AppContextProps {
   theme: string;
   setTheme: (value: string) => void;
 }
+const [token, settoken] = useState<string | null>(null);
 
 export const AppContext = createContext<AppContextProps>({
   theme: "light",
