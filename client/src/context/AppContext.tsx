@@ -10,7 +10,11 @@ export const AppContext = createContext<AppContextProps>({
   setTheme: () => {},
 });
 
-const AppContextProvider: React.FC = (children) => {
+interface Props {
+  children: React.ReactNode;
+}
+
+const AppContextProvider: React.FC<Props> = ({ children }) => {
   const [theme, setTheme] = useState("light");
 
   return (

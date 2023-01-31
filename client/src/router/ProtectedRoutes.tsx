@@ -1,20 +1,39 @@
 import React, { useContext } from "react";
-import { Route, Navigate, RouteProps } from "react-router-dom";
-import AppContext from "../context/AppContext";
+import { Route, RouteProps, useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
+import {
+  AdminDashboardLayout,
+  DevDashboardLayout,
+  HrDashboardLayout,
+} from "../layout";
 
-interface Props extends RouteProps {
-  component: React.ElementType;
+type Props = RouteProps {
+  token: string;
+  userObject: {
+    role: string;
+  };
 }
 
-const ProtectedRoute: React.FC<Props> = ({ component: Component, ...rest }) => {
-  const { token } = useContext(AuthContext);
+const ProtectedRoute: React.FC<Props> = ({ token, userObject, ...rest }) => {
+  const { authToken } = useContext(AppContext);
+  const navigate = useNavigate();
 
-  return (
-    <Route
-      {...rest}
-      render={(props) => (token ? <Component {...props} /> : <Navigate />)}
-    />
-  );
+  if (!token || token !== authToken) {
+    navigate("/login");
+    return null;
+  }
+
+  if (userObject.role === "admin") {
+    return <Route {...rest} component={AdminDashboardLayout} />;
+  }
+
+  if (userObject.role === "hr") {
+    return <Route {...rest} component={HrDashboardLayout} />;
+  }
+
+  navigate("/");
+  return null;
 };
 
 export default ProtectedRoute;
+
