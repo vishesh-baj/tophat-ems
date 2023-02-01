@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const employeeSchema = new mongoose.Schema(
   { firstName: String, required: true },
   { lastName: String, required: true },
