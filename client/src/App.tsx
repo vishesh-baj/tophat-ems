@@ -1,19 +1,14 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { LoginPage } from "./pages";
 import { PATHS } from "./router/paths";
 import { authRoutes, routes } from "./router/router";
 
 const App = () => {
   return (
     <div className="body-default">
-      <h1 className="">TOPHAT EMS - TYPESCRIPT</h1>
       <Routes>
-        {authRoutes.map((authRoute) => {
-          <Route
-            path={authRoute.path}
-            element={<authRoute.Element />}
-            key={authRoute.key}
-          />;
-        })}
+        <Route path={PATHS.root} element={<Navigate to={PATHS.login} />} />
+        <Route path={PATHS.login} element={<LoginPage />} />
       </Routes>
     </div>
   );
