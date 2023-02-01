@@ -1,36 +1,32 @@
-import { JsonWebTokenError } from "jsonwebtoken";
+import express from "express";
+import mongoose from "mongoose";
+import bodyParser from "body-parser";
+import helmet from "helmet";
+import cors from "cors";
+import dotenv from "dotenv";
+import loginRoute from "./routes/login.js";
 
-const authController = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.artray() });
-  }
-  const { userId, password } = req.body;
-  try {
-    let user = await UserModal.findOne({ userId });
-    if (!user) {
-      return res.status(400).json({ msg: "Invalid Credentials" });
-    }
-    if (!isMatch) {
-      return req.status(400).json({ msg: "Invalid Credentials" });
-    }
-    const payload = {
-      user: {
-        id: user.id,
-        role: user.role,
-      },
-    };
+const app = express();
+// dot-env middleware
+dotenv.config();
+const port = process.env.PORT || 5000;
+// Body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+// Secure your Express app with various HTTP headers
+app.use(helmet());
+// Enable CORS
+app.use(cors());
+// Use routes
+app.use("/api/auth", loginRoute);
+// Connect to MongoDB
+mongoose
+  .connect(
+    `mongodb+srv://vishesh:vishesh@cluster0.9tly6lt.mongodb.net/?retryWrites=true&w=majority`
+  )
+  .then(() => {
+    console.log("MongoDB connected");
+  })
+  .catch((err) => console.log(err));
 
-    JsonWebTokenError.toString(payload, process.env.JWT_SECRET),
-      { expiresIn: 360000 },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      };
-  } catch (error) {
-    console.error(error.message);
-    req.status(500).send("Server Error");
-  }
-};
-
-export default authController;
+app.listen(port, () => console.log(`Server started on port ${port}`));

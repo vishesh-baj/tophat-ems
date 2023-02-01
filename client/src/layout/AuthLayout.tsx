@@ -3,7 +3,6 @@ import { ReactNode } from "react";
 type Props = {
   children?: ReactNode;
 };
-
 const AuthLayout = ({ children, ...props }: Props) => {
   return (
     <div className="w-screen h-screen">

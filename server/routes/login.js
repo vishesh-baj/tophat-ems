@@ -1,16 +1,7 @@
 import express from "express";
 const router = express.Router();
-import loginController from "../controllers/loginController";
-const { check } = require("express-validator/check");
-
+import loginController from "../controllers/loginController.js";
 // login route
-router.post(
-  "/login",
-  [
-    check("userId", "userId is required").not().isEmpty(),
-    check("password", "password is required").not().isEmpty(),
-  ],
-  loginController
-);
+router.post("/login", loginController);
+export default router;
 
-module.exports = router;

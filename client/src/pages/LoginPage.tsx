@@ -6,6 +6,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { PATHS } from "../router/paths";
+
 type Props = {};
 const LoginPage = (props: Props) => {
   const [togglePassword, setTogglePassword] = useState(false);
