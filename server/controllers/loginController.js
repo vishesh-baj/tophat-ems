@@ -16,7 +16,7 @@ const loginController = router.post("/login", async (req, res) => {
   // Create a JWT
   const token = jwt.sign(
     { _id: user._id, role: user.role },
-    process.env.JWT_SECRET
+    process.env.SECRET_KEY
   );
 
   // Send the JWT and user information in the response
