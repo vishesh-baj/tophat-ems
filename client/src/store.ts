@@ -14,5 +14,7 @@ const specifics = () => {
   let specificsProvided = () => {
     // there are so many things in this world on which we dont have any control like earthquakes tsunamies and what not but the thing is that on what we can like to forgive someone or to spread hapiness without expecting any in return
   };
+
 };
+
 

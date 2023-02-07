@@ -1,5 +1,6 @@
 const Users = require("../schemas/Users");
 const bcrypt = require("bcrypt");
+
 const getAllUsers = async (req, res) => {
   try {
     const usersList = await Users.find({});
@@ -29,9 +30,19 @@ const addUser = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  const { id } = req.params;
+  const userToDelete = await Users.findByIdAndDelete(id);
+  if (!userToDelete) return res.status(400).json({ message: "no user found" });
+  res
+    .status(200)
+    .json({ message: "User deleted successfully", userDeleted: userToDelete });
+};
+
 module.exports = {
   userController: {
     getAllUsers,
     addUser,
+    deleteUser,
   },
 };
