@@ -1,4 +1,5 @@
 const Users = require("../schemas/Users");
+const bcrypt = require("bcrypt");
 const getAllUsers = async (req, res) => {
   try {
     const usersList = await Users.find({});
@@ -9,22 +10,27 @@ const getAllUsers = async (req, res) => {
 };
 
 const addUser = async (req, res) => {
+  const { userId, role, password } = req.body;
+  const userExists = await Users.findOne({ userId });
+  if (userExists)
+    return res.status(201).json({ message: "User Already Exists" });
+  const salt = await bcrypt.genSalt();
+  const hashedPassword = await bcrypt.hash(password, salt);
+  console.log("User doesnot exist", "HASHED PASSWORD: ", hashedPassword);
+  const newUser = new Users({ userId, role, password: hashedPassword });
+  const savedUser = await newUser.save();
+  res
+    .status(200)
+    .json({ message: "user created successfully", userCreated: savedUser });
+
   try {
-    const payload = req.body;
-    const user = Users.findOne(payload);
-    if (user) return res.json(user);
-    const newUser = new Users(userId, role, password);
-    await newUser.save();
-    res.status(200).json(newUser);
   } catch (error) {
-    res.status(400).json({ error: error });
+    res.status(400).json({ message: error.message });
   }
 };
-
 module.exports = {
   userController: {
     getAllUsers,
     addUser,
   },
 };
-

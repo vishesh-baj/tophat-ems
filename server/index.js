@@ -13,7 +13,6 @@ mongoose
 
 // Create express app
 const app = express();
-
 // Use helmet for security
 app.use(helmet());
 // cross origin resourse sharing
