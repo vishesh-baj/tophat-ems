@@ -8,7 +8,7 @@ const loginController = async (req, res) => {
     const { userId, password } = req.body;
     const user = await Users.findOne({ userId });
     if (!user) return res.status(401).json({ message: "user not found" });
-    const validPassword = bcrypt.compare(password, process.env.HASH_SECRET);
+    const validPassword = bcrypt.compare(password, user.password);
     if (!validPassword)
       return res.status(401).json({ message: "Password is invalid" });
     // create a token
