@@ -18,7 +18,6 @@ const loginController = async (req, res) => {
       { expiresIn: "1d" }
     );
     res.status(200).json({ token });
-    // send the token in response
   } catch (error) {
     res.status(404).json(error);
   }
