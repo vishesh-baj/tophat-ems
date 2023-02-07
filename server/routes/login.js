@@ -1,6 +1,8 @@
-import express from "express";
+const express = require("express");
+const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
+const loginController = require("../controllers/loginController");
+const Users = require("../schemas/Users");
 const router = express.Router();
-import loginController from "../controllers/loginController.js";
-// login route
 router.post("/login", loginController);
-export default router;
+module.exports = router;

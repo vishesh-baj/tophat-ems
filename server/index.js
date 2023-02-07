@@ -1,32 +1,35 @@
-import express from "express";
-import mongoose from "mongoose";
-import bodyParser from "body-parser";
-import helmet from "helmet";
-import cors from "cors";
-import dotenv from "dotenv";
-import loginRoute from "./routes/login.js";
-
-const app = express();
-// dot-env middleware
-dotenv.config();
-const port = process.env.PORT || 5000;
-// Body parser middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-// Secure your Express app with various HTTP headers
-app.use(helmet());
-// Enable CORS
-app.use(cors());
-// Use routes
-app.use("/api/auth", loginRoute);
+require("dotenv").config();
+const cors = require("cors");
+const express = require("express");
+const helmet = require("helmet");
+const mongoose = require("mongoose");
+const loginRoute = require("./routes/login");
+const userRoute = require("./routes/user");
 // Connect to MongoDB
 mongoose
-  .connect(
-    `mongodb+srv://vishesh:vishesh@cluster0.9tly6lt.mongodb.net/?retryWrites=true&w=majority`
-  )
-  .then(() => {
-    console.log("MongoDB connected");
+  .connect(process.env.DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
-  .catch((err) => console.log(err));
+  .then(() => console.log("DB CONNECTED"))
+  .catch((err) => console.log(`ERROR OCCURED: ${err}`));
 
-app.listen(port, () => console.log(`Server started on port ${port}`));
+// Create express app
+const app = express();
+
+// Use helmet for security
+app.use(helmet());
+// cross origin resourse sharing
+app.use(cors());
+// Parse JSON request body
+app.use(express.json());
+
+// routes
+app.use("/api/auth", loginRoute);
+app.use("/api", userRoute);
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`SERVER STARTED ON PORT: ${PORT}`);
+});
