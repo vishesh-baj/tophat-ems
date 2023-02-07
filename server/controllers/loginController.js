@@ -14,7 +14,8 @@ const loginController = async (req, res) => {
     // create a token
     const token = jwt.sign(
       { useId: user.userId, role: user.role },
-      process.env.JWT_SECRET
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
     );
     res.status(200).json({ token });
     // send the token in response
