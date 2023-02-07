@@ -7,10 +7,7 @@ const loginRoute = require("./routes/login");
 const userRoute = require("./routes/user");
 // Connect to MongoDB
 mongoose
-  .connect(process.env.DB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.DB_URL)
   .then(() => console.log("DB CONNECTED"))
   .catch((err) => console.log(`ERROR OCCURED: ${err}`));
 
