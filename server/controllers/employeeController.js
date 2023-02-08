@@ -1,4 +1,5 @@
 const Employees = require("../schemas/Employee");
+const Users = require("../schemas/Users");
 
 const getAllEmployees = async (req, res) => {
   try {
@@ -21,8 +22,14 @@ const addEmployee = async (req, res) => {
       return res
         .status(401)
         .json({ messge: "Employee already exists in db with same email id" });
+    // create new employee
     const newEmployee = new Employees(employeePayload);
     const savedEmployee = await newEmployee.save();
+    // todo: create user with userId, password, role as per the payload we get from FE
+    // const userId = Math.floor(
+    //   Math.random(employeePayload.firstName.length) * 10
+    // );
+
     res
       .status(200)
       .json({ message: "Employee created successfully", savedEmployee });
