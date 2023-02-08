@@ -61,11 +61,9 @@ const EmployeeSchema = new mongoose.Schema(
     },
     dateOfReleiving: {
       type: String,
-      required: true,
     },
     documents: {
       type: Array,
-      required: true,
     },
     role: {
       type: String,
@@ -80,3 +78,6 @@ const EmployeeSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+const Employee = mongoose.model("Employee", EmployeeSchema);
+module.exports = Employee;
