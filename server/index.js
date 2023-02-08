@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const mongoose = require("mongoose");
 const loginRoute = require("./routes/login");
 const userRoute = require("./routes/user");
+const corsHeaders = require("./middlewares/corsHeaders");
 // Connect to MongoDB
 mongoose
   .connect(process.env.DB_URL)
@@ -13,10 +14,20 @@ mongoose
 
 // Create express app
 const app = express();
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 // Use helmet for security
 app.use(helmet());
 // cross origin resourse sharing
 app.use(cors());
+// app.use(corsHeaders());
 // Parse JSON request body
 app.use(express.json());
 

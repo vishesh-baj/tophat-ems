@@ -4,12 +4,22 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { PATHS } from "../router/paths";
-
+import axios from "axios";
+import { BE_CONNECTION_STRING } from "../constants";
+import { useDispatch } from "react-redux";
+import { setToken } from "../slices/app/AppSlice";
 type Props = {};
+interface loginPayload {
+  userId: string;
+  password: string;
+}
 
 const LoginPage = (props: Props) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const [togglePassword, setTogglePassword] = useState(false);
   const schema = yup.object({
     userId: yup.string().required("user id is required"),
@@ -30,8 +40,15 @@ const LoginPage = (props: Props) => {
     formState: { errors },
   } = useForm<FormData>({ resolver: yupResolver(schema) });
 
-  const onSubmit = (data: FormData) => {
-    console.log("FORM DATA: ", data);
+  const onSubmit = async (data: FormData) => {
+    const response = await axios.post(
+      `${BE_CONNECTION_STRING}/auth/login`,
+      data
+    );
+    const token = response.data.token;
+    dispatch(setToken(token));
+    localStorage.setItem("token", token);
+    navigate(PATHS.dashboard);
   };
 
   return (
