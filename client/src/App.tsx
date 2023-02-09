@@ -1,8 +1,6 @@
-import { Route, Routes, Navigate, Outlet } from "react-router-dom";
-import { DashboardPage, LoginPage } from "./pages";
+import { Route, Routes } from "react-router-dom";
+import { LoginPage } from "./pages";
 import { PATHS } from "./router/paths";
-import { useEffect, useState } from "react";
-import React from "react";
 import { AdminDashboardLayout } from "./layout";
 import PrivateRoute from "./router/PrivateRoute";
 import ReverseAuthRoute from "./router/ReverseAuthRoute";
