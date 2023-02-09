@@ -1,43 +1,37 @@
-import React, { useState, ReactNode } from "react";
-
+import React, { useMemo } from "react";
+import { useTable } from "react-table";
+import { employees } from "../interfaces/employees.interface";
 type Props = {
-  children: ReactNode;
+  data: employees[];
 };
 
 const Table = (props: Props) => {
+  const data = useMemo(() => props.data, [props.data]);
+  // columns specifics to the table
+  const columns = [
+    {
+      Header: "Column 1",
+      accessor: "col1", // accessor is the "key" in the data
+    },
+    {
+      Header: "Column 2",
+      accessor: "col2",
+    },
+  ];
+
+  const { getTableProps, getTableBodyProps, prepareRow, headerGroups, rows } =
+    useTable({ columns, data });
   return (
     <div className="overflow-x-auto">
-      <table className="table w-full">
-        {/* <!-- head --> */}
+      <table className="table" {...getTableProps()}>
         <thead>
           <tr>
             <th></th>
-            <th>Name</th>
-            <th>Job</th>
-            <th>Favorite Color</th>
           </tr>
         </thead>
         <tbody>
-          {/* <!-- row 1 --> */}
           <tr>
-            <th>1</th>
-            <td>Cy Ganderton</td>
-            <td>Quality Control Specialist</td>
-            <td>Blue</td>
-          </tr>
-          {/* <!-- row 2 --> */}
-          <tr>
-            <th>2</th>
-            <td>Hart Hagerty</td>
-            <td>Desktop Support Technician</td>
-            <td>Purple</td>
-          </tr>
-          {/* <!-- row 3 --> */}
-          <tr>
-            <th>3</th>
-            <td>Brice Swyre</td>
-            <td>Tax Accountant</td>
-            <td>Red</td>
+            <td></td>
           </tr>
         </tbody>
       </table>

@@ -16,6 +16,7 @@ interface loginPayload {
   password: string;
 }
 
+// login page
 const LoginPage = (props: Props) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
