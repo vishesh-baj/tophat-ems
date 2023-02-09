@@ -3,6 +3,7 @@ const Users = require("../schemas/Users");
 const { v4: uuidv4 } = require("uuid");
 const createPassword = require("../utils");
 const bcrypt = require("bcrypt");
+
 // * get list of all employees
 const getAllEmployees = async (_req, res) => {
   try {
