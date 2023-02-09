@@ -1,22 +1,24 @@
-import { Route, Routes, Navigate } from "react-router-dom";
-import { LoginPage } from "./pages";
+import { Route, Routes, Navigate, Outlet } from "react-router-dom";
+import { DashboardPage, LoginPage } from "./pages";
 import { PATHS } from "./router/paths";
-import ProtectedRoute from "./router/ProtectedRoutes";
-import { authRoutes, routes } from "./router/router";
+import { useEffect, useState } from "react";
+import React from "react";
+import { AdminDashboardLayout } from "./layout";
+import PrivateRoute from "./router/PrivateRoute";
+import ReverseAuthRoute from "./router/ReverseAuthRoute";
 const App = () => {
   return (
-    // to be routed to when logged in
     <div className="body-default">
       <Routes>
-        {/* {routes.map((authRoute) => {
+        <Route element={<PrivateRoute />}>
           <Route
-            element={<authRoute.Element />}
-            path={authRoute.path}
-            key={authRoute.key}
-          />;
-        })} */}
-        <Route path={PATHS.root} element={<Navigate to={PATHS.login} />} />
-        <Route path={PATHS.login} element={<LoginPage />} />
+            element={<AdminDashboardLayout />}
+            path={PATHS.adminDashboard}
+          />
+        </Route>
+        <Route element={<ReverseAuthRoute />}>
+          <Route element={<LoginPage />} path={PATHS.login} />
+        </Route>
       </Routes>
     </div>
   );
