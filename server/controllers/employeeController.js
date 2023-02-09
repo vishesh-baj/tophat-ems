@@ -22,15 +22,6 @@ const addEmployee = async (req, res) => {
   try {
     const employeePayload = req.body;
     const email = employeePayload.officialEmail;
-    const employeeExists = await Employees.findOne({ officialEmail: email });
-
-    if (employeeExists)
-      return res.status(401).json({
-        messge: "Employee already exists in db with same email id",
-      });
-    const newEmployee = new Employees(employeePayload);
-    const savedEmployee = await newEmployee.save();
-
     const userIdArr = uuidv4().split("-");
     const userId = userIdArr[0] + userIdArr[3];
     const userPassword = createPassword(
@@ -54,13 +45,24 @@ const addEmployee = async (req, res) => {
       password: hashedPassword,
     });
     const savedUser = await newUser.save();
+    const employeeExists = await Employees.findOne({ officialEmail: email });
+
+    if (employeeExists)
+      return res.status(401).json({
+        messge: "Employee already exists in db with same email id",
+      });
+    const newEmployee = new Employees({
+      ...employeePayload,
+      associatedUserId: savedUser._id,
+    });
+    const savedEmployee = await newEmployee.save();
 
     res.status(200).json({
       message:
         "Employee created successfully, User created successfully from Employee.",
       savedEmployee,
       savedUser,
-      // should be sent only once and then deleted
+      // ! should be sent only once and then deleted
       userPassword,
     });
   } catch (error) {
