@@ -3,18 +3,29 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { useState, useRef } from "react";
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, NavLink } from "react-router-dom";
 import { PATHS } from "../router/paths";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { BE_CONNECTION_STRING } from "../constants";
+import { useDispatch } from "react-redux";
+import { setToken } from "../slices/app/AppSlice";
 type Props = {};
+interface loginPayload {
+  userId: string;
+  password: string;
+}
+const header = {
+  "Content-Type": "multipart/form-data",
+  "Access-Control-Allow-Origin": "*",
+};
 
 const LoginPage = (props: Props) => {
+  const dispatch = useDispatch();
+
   const [togglePassword, setTogglePassword] = useState(false);
   const navigate = useNavigate();
-  const isLogged = useRef(false);
+  // const isLogged = useRef(false);
   const schema = yup.object({
     userId: yup.string().required("user id is required"),
     password: yup
@@ -34,31 +45,41 @@ const LoginPage = (props: Props) => {
     formState: { errors },
   } = useForm<FormData>({ resolver: yupResolver(schema) });
 
-  const onSubmit = (data: FormData) => {
-    console.log("FORM DATA: ", data);
+  // const onSubmit = (data: FormData) => {
+  //   console.log("FORM DATA: ", data);
 
-    // const datas = {
-    //   userId: userId,
-    //   password: password,
-    // };
+  // const datas = {
+  //   userId: userId,
+  //   password: password,
+  // };
 
-    axios.post("http://localhost:8080/api/auth/login", data).then((res) => {
-      console.log(res.data);
-      // if (res.status === 203) {
-      //   return toast.warn(res.data.message);
-      // }
-      if (res.status === 200) {
-        isLogged.current = true;
+  // axios.post("http://localhost:8080/api/auth/login", data).then((res) => {
+  //   console.log(res.data);
+  //   // if (res.status === 203) {
+  //   //   return toast.warn(res.data.message);
+  //   // }
+  //   if (res.status === 200) {
+  //     isLogged.current = true;
 
-        // Saving token
-        localStorage.setItem("token", res.data.token);
+  //     // Saving token
+  //     localStorage.setItem("token", res.data.token);
 
-        if (localStorage.getItem("token") !== undefined && isLogged) {
-          console.log("hii");
-          navigate("/dashboard");
-        }
-      }
-    });
+  //     if (localStorage.getItem("token") !== undefined && isLogged) {
+  //       console.log("hii");
+  //       navigate("/dashboard");
+  //     }
+  //   }
+  // });
+  const onSubmit = async (data: FormData) => {
+    const response = await axios.post(
+      `${BE_CONNECTION_STRING}/auth/login`,
+      data,
+      { headers: header }
+    );
+    const token = response.data.token;
+    dispatch(setToken(token));
+    localStorage.setItem("token", token);
+    navigate(PATHS.dashboard);
   };
 
   return (
