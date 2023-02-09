@@ -85,16 +85,32 @@ const editEmployee = async (req, res) => {
       .status(200)
       .json({ message: "Employee edited successfully.", editedEmployee });
   } catch (error) {
-    res.status(400).json({ message: "Ad error occured", error: error.message });
+    res.status(400).json({ message: "An error occured", error: error.message });
   }
 };
 
-
+const deleteEmployee = async (req, res) => {
+  try {
+    const employeeId = req.params.id;
+    const employeeExists = await Employees.findById(employeeId);
+    if (!employeeExists)
+      return res.status(400).json({
+        message: `Employee doesnot exist with the following ID: ${employeeId}`,
+      });
+    const deletedEmployee = await Employees.findByIdAndDelete(employeeId);
+    res
+      .status(200)
+      .json({ message: "Employee deleted successfully.", deletedEmployee });
+  } catch (error) {
+    res.status(400).json({ message: "An error occured", error: error.message });
+  }
+};
 
 module.exports = {
   employeeController: {
     getAllEmployees,
     addEmployee,
     editEmployee,
+    deleteEmployee,
   },
 };
