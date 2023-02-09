@@ -4,5 +4,5 @@ const { employeeController } = require("../controllers/employeeController");
 const verifyToken = require("../middlewares/verifyToken");
 router.get("/all-employees", verifyToken, employeeController.getAllEmployees);
 router.post("/add-employee", verifyToken, employeeController.addEmployee);
-
+router.put("/edit-employee/:id", verifyToken, employeeController.editEmployee);
 module.exports = router;

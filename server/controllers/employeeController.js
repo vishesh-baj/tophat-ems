@@ -68,9 +68,33 @@ const addEmployee = async (req, res) => {
   }
 };
 
+const editEmployee = async (req, res) => {
+  try {
+    const employeePayload = req.body;
+    const employeeId = req.params.id;
+    const employeeExists = await Employees.findById(employeeId);
+    if (!employeeExists)
+      return res.status(401).json({
+        message: `Employee doesnot exist with the following ID: ${employeeId} `,
+      });
+    const editedEmployee = await Employees.findByIdAndUpdate(
+      employeeId,
+      employeePayload
+    );
+    res
+      .status(200)
+      .json({ message: "Employee edited successfully.", editedEmployee });
+  } catch (error) {
+    res.status(400).json({ message: "Ad error occured", error: error.message });
+  }
+};
+
+
+
 module.exports = {
   employeeController: {
     getAllEmployees,
     addEmployee,
+    editEmployee,
   },
 };
