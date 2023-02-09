@@ -3,14 +3,18 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { PATHS } from "../router/paths";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 type Props = {};
 
 const LoginPage = (props: Props) => {
   const [togglePassword, setTogglePassword] = useState(false);
+  const navigate = useNavigate();
+  const isLogged = useRef(false);
   const schema = yup.object({
     userId: yup.string().required("user id is required"),
     password: yup
@@ -32,6 +36,29 @@ const LoginPage = (props: Props) => {
 
   const onSubmit = (data: FormData) => {
     console.log("FORM DATA: ", data);
+
+    // const datas = {
+    //   userId: userId,
+    //   password: password,
+    // };
+
+    axios.post("http://localhost:8080/api/auth/login", data).then((res) => {
+      console.log(res.data);
+      // if (res.status === 203) {
+      //   return toast.warn(res.data.message);
+      // }
+      if (res.status === 200) {
+        isLogged.current = true;
+
+        // Saving token
+        localStorage.setItem("token", res.data.token);
+
+        if (localStorage.getItem("token") !== undefined && isLogged) {
+          console.log("hii");
+          navigate("/dashboard");
+        }
+      }
+    });
   };
 
   return (
