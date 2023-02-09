@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const Users = require("../schemas/Users");
 const bcrypt = require("bcrypt");
 
-// Login route
+// * sends back userObj as token in response
 const loginController = async (req, res) => {
   try {
     const { userId, password } = req.body;

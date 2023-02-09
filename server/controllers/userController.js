@@ -1,6 +1,7 @@
 const Users = require("../schemas/Users");
 const bcrypt = require("bcrypt");
 
+// * get all users
 const getAllUsers = async (req, res) => {
   try {
     const usersList = await Users.find({});
@@ -10,6 +11,7 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// * add a new user
 const addUser = async (req, res) => {
   const { userId, role, password } = req.body;
   const userExists = await Users.findOne({ userId });
@@ -30,6 +32,7 @@ const addUser = async (req, res) => {
   }
 };
 
+// * delete a user
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   const userToDelete = await Users.findByIdAndDelete(id);
