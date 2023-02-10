@@ -49,7 +49,7 @@ const LoginPage = (props: Props) => {
     const token = response.data.token;
     dispatch(setToken(token));
     localStorage.setItem("token", token);
-    navigate(PATHS.adminDashboard);
+    navigate(PATHS.employees);
   };
 
   return (

@@ -1,7 +1,7 @@
 const Employees = require("../schemas/Employee");
 const Users = require("../schemas/Users");
 const { v4: uuidv4 } = require("uuid");
-const createPassword = require("../utils");
+const { utils } = require("../utils");
 const bcrypt = require("bcrypt");
 
 // * get list of all employees
@@ -16,7 +16,6 @@ const getAllEmployees = async (_req, res) => {
     res.status(400).json({ message: "error occured", error });
   }
 };
-
 // * add an employee
 const addEmployee = async (req, res) => {
   try {
@@ -24,7 +23,7 @@ const addEmployee = async (req, res) => {
     const email = employeePayload.officialEmail;
     const userIdArr = uuidv4().split("-");
     const userId = userIdArr[0] + userIdArr[3];
-    const userPassword = createPassword(
+    const userPassword = utils.createPassword(
       employeePayload.firstName,
       employeePayload.department,
       userIdArr

@@ -7,5 +7,5 @@ export { default as Header } from "./Header";
 export { default as Input } from "./Input";
 export { default as Radio } from "./Radio";
 export { default as Range } from "./Range";
-export { default as Table } from "./Table";
 export { default as Tabs } from "./Tabs";
+export { default as Table } from "./Table";

@@ -7,4 +7,8 @@ const createPassword = (firstName, department, userIdArr) => {
   return oddFirstName + userIdArr[1] + department;
 };
 
-module.exports = createPassword;
+module.exports = {
+  utils: {
+    createPassword,
+  },
+};

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { FC } from "react";
 
 type Props = {};
 
-const Header = (props: Props) => {
+const Header: FC = (props: Props) => {
   return <div>Header</div>;
 };
 

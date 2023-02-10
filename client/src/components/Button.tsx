@@ -1,6 +1,6 @@
-import React from "react";
+import React, { FC } from "react";
 type Props = {};
-const Button = (props: Props) => {
+const Button: FC = (props: Props) => {
   return <div>Button</div>;
 };
 export default Button;

@@ -1,8 +1,8 @@
-import React from "react";
+import React, { FC } from "react";
 
 type Props = {};
 
-const Calendar = (props: Props) => {
+const Calendar: FC = (props: Props) => {
   return <div>Calendar</div>;
 };
 

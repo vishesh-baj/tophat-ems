@@ -1,8 +1,8 @@
-import React from "react";
+import React, { FC } from "react";
 
 type Props = {};
 
-const Radio = (props: Props) => {
+const Radio: FC = (props: Props) => {
   return <div>Radio</div>;
 };
 

@@ -1,20 +1,12 @@
 import axios from "axios";
 // axios instance
-const axiosInstance = axios.create({
-  baseURL: "https://api.example.com",
+const EMS_CLIENT = axios.create({
+  baseURL: "http://localhost:8080/api/",
   timeout: 5000,
+  headers: {
+    Accept: "application/json",
+    token: `${localStorage.getItem("token")}`,
+  },
 });
 
-// axios isntance middleware
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
-
-export default axiosInstance;
+export default EMS_CLIENT;
