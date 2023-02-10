@@ -47,9 +47,9 @@ export default function Table({ columns, data }) {
   );
 
   return (
-    <div>
+    <div className="overflow-x-auto">
       <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
-      <table {...getTableProps()}>
+      <table className="table table-zebra w-full" {...getTableProps()}>
         <thead>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
