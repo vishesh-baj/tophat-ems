@@ -1,12 +1,14 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import EMS_CLIENT from "../api";
+import { addEmployees } from "../slices/app/EmployeeSlice";
+
 const EmployeesPage: FC = () => {
-  const [employeesList, setEmployeesList] = useState();
+  const dispatch = useDispatch();
   const fetchAllEmployees = async () => {
     const response = await EMS_CLIENT.get("all-employees");
-
-    setEmployeesList(response.data);
-    console.log(response.data);
+    console.log("RESPONSE: ", response.data.employeesList);
+    dispatch(addEmployees(response.data.employeesList));
   };
 
   useEffect(() => {
