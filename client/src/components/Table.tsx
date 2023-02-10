@@ -1,7 +1,6 @@
-import { FC } from "react";
+import { FC, useMemo } from "react";
 import { useTable } from "react-table";
-
-const Table: FC = () => {
+const Table: FC = ({ tableRows, tableColumns }: any) => {
   //   const tableInstance = useTable();
   return (
     <table>

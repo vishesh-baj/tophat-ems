@@ -1,8 +1,9 @@
 import { FC, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
+import { Table } from "../components";
+import { employeeColumns } from "../constants";
 import { addEmployees } from "../slices/app/EmployeeSlice";
-
 const EmployeesPage: FC = () => {
   const dispatch = useDispatch();
   const fetchAllEmployees = async () => {
@@ -14,7 +15,12 @@ const EmployeesPage: FC = () => {
   useEffect(() => {
     fetchAllEmployees();
   }, []);
-  return <div>EmployeesPage</div>;
+  return (
+    <div>
+      EmployeesPage
+      <Table />
+    </div>
+  );
 };
 
 export default EmployeesPage;
