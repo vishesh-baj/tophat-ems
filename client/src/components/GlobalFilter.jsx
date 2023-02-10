@@ -1,4 +1,3 @@
-import { any } from "prop-types";
 import { useState } from "react";
 import { useAsyncDebounce } from "react-table";
 
@@ -8,15 +7,14 @@ export const GlobalFilter = ({ filter, setFilter }) => {
     setFilter(value || undefined);
   }, 1000);
   return (
-    <span>
-      Search:{" "}
-      <input
-        value={value || ""}
-        onChange={(e) => {
-          setValue(e.target.value);
-          onChange(e.target.value);
-        }}
-      />
-    </span>
+    <input
+      className="input  my-5 w-1/4 float-right"
+      placeholder="Search"
+      value={value || ""}
+      onChange={(e) => {
+        setValue(e.target.value);
+        onChange(e.target.value);
+      }}
+    />
   );
 };
