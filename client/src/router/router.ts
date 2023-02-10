@@ -1,3 +1,4 @@
+import { IRoute } from "./../interfaces/index";
 import { PATHS } from "./paths";
 import {
   CandidatesPage,
@@ -8,9 +9,10 @@ import {
   LoginPage,
   RegisterPage,
   ReportsPage,
-} from "../pages/";
+} from "../pages";
 
-export const authRoutes = [
+// * auth routes
+export const authRoutes: IRoute[] = [
   {
     key: PATHS.dashboard,
     path: PATHS.dashboard,
@@ -38,6 +40,7 @@ export const authRoutes = [
   },
 ];
 
+// * public routes
 export const routes = [
   {
     key: PATHS.root,

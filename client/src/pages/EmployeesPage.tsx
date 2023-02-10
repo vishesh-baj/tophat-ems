@@ -20,7 +20,7 @@ const EmployeesPage: FC = () => {
   return (
     <div>
       EmployeesPage
-      <Table />
+      {/* <Table /> */}
     </div>
   );
 };

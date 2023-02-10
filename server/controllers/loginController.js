@@ -13,7 +13,7 @@ const loginController = async (req, res) => {
       return res.status(401).json({ message: "Password is invalid" });
     // create a token
     const token = jwt.sign(
-      { useId: user.userId, role: user.role },
+      { userId: user.userId, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
