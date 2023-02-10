@@ -5,6 +5,8 @@ import { Table } from "../components";
 import { employeeColumns } from "../constants";
 import { addEmployees } from "../slices/app/EmployeeSlice";
 const EmployeesPage: FC = () => {
+  const data = useSelector((state: any) => state.employees.value);
+  console.log(data);
   const dispatch = useDispatch();
   const fetchAllEmployees = async () => {
     const response = await EMS_CLIENT.get("all-employees");
