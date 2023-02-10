@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { addCandidate } from "../slices/app/CandidateSlice";
 const CandidatesPage: FC = () => {
