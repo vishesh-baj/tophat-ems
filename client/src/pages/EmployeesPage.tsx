@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
@@ -8,9 +8,14 @@ import { addEmployees } from "../slices/app/EmployeeSlice";
 const columnHelper = createColumnHelper<IEmployees>();
 
 const EmployeesPage = () => {
+  const checkboxRef = useRef<HTMLInputElement>(null);
   // TODO: Create edit and delete
   const handleEdit = (row: any) => {
-    console.log("row", row);
+    // console.log("row", row, "Modal ref:", modalRef.current);
+    if (checkboxRef.current) {
+      checkboxRef.current.checked = !checkboxRef.current.checked;
+      console.log("Checkbox is checked:", checkboxRef.current.checked);
+    }
   };
 
   const handleDelete = (row: any) => {
@@ -115,6 +120,7 @@ const EmployeesPage = () => {
       ),
     }),
   ];
+
   const data = useSelector((state: any) => state.employees);
 
   useEffect(() => {
@@ -126,6 +132,29 @@ const EmployeesPage = () => {
       <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
       <div className="overflow-x-auto mx-14">
         <Table tableColumns={columns} tableRows={data} />
+      </div>
+      {/* Put this part before </body> tag */}
+      <input
+        ref={checkboxRef}
+        type="checkbox"
+        id="employee-modal"
+        className="modal-toggle"
+      />
+      <div className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">
+            Congratulations random Internet user!
+          </h3>
+          <p className="py-4">
+            You've been selected for a chance to get one year of subscription to
+            use Wikipedia for free!
+          </p>
+          <div className="modal-action">
+            <label htmlFor="employee-modal" className="btn">
+              Yay!
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useReducer } from "react";
+import React, { useState, useMemo } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -14,8 +14,8 @@ type TableProps = {
 
 const Table = ({ tableRows, tableColumns }: TableProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const data = useMemo(() => tableRows, []);
-  const columns = useMemo(() => tableColumns, []);
+  const data = tableRows;
+  const columns = tableColumns;
 
   const table = useReactTable({
     data,
