@@ -1,148 +1,78 @@
+import React, { useState, useMemo, useReducer } from "react";
 import {
-  useTable,
-  useSortBy,
-  useGlobalFilter,
-  usePagination,
-  useFilters,
-} from "react-table";
-import { useMemo } from "react";
-import { GlobalFilter } from "./GlobalFilter";
-import { ColumnFilter } from "./ColumnFilter";
-import "regenerator-runtime/runtime";
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import { AscendingIcon, DescendingIcon } from "../assets";
+type TableProps = {
+  tableRows: {}[];
+  tableColumns: any;
+};
 
-export default function Table({ columns, data }) {
-  const defaultColumn = useMemo(
-    () => ({
-      Filter: ColumnFilter,
-    }),
-    []
-  );
+const Table = ({ tableRows, tableColumns }: TableProps) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const data = useMemo(() => tableRows, []);
+  const columns = useMemo(() => tableColumns, []);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    setGlobalFilter,
-    page,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
-    state: { pageIndex, pageSize, globalFilter },
-  } = useTable(
-    {
-      columns,
-      data,
-      defaultColumn,
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
     },
-    useFilters,
-    useGlobalFilter,
-    useSortBy,
-    usePagination
-  );
+    onSortingChange: setSorting,
+  });
 
   return (
-    <div className="m-4 flex flex-col flex-end">
-      <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
-      <div className="overflow-x-auto">
-        <table className="table table-zebra w-full" {...getTableProps()}>
-          <thead>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>
-                    {column.render("Header")}
-                    <div>
-                      {column.canFilter ? column.render("Filter") : null}
-                    </div>
-                  </th>
-                ))}
-              </tr>
+    <table className="table table-zebra w-full">
+      <thead>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <th key={header.id}>
+                {header.isPlaceholder ? null : (
+                  <div
+                    {...{
+                      className: header.column.getCanSort()
+                        ? "cursor-pointer select-none flex gap-1"
+                        : "",
+                      onClick: header.column.getToggleSortingHandler(),
+                    }}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {{
+                      asc: <AscendingIcon />,
+                      desc: <DescendingIcon />,
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </div>
+                )}
+              </th>
             ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <div className="pagination" style={{ marginTop: "1rem" }}>
-          <button
-            className="btn btn-primary"
-            onClick={() => gotoPage(0)}
-            disabled={!canPreviousPage}
-          >
-            {"<<"}
-          </button>{" "}
-          <button
-            className="btn btn-primary"
-            onClick={() => previousPage()}
-            disabled={!canPreviousPage}
-          >
-            {"<"}
-          </button>{" "}
-          <button
-            className="btn btn-primary"
-            onClick={() => nextPage()}
-            disabled={!canNextPage}
-          >
-            {">"}
-          </button>{" "}
-          <button
-            className="btn btn-primary"
-            onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
-          >
-            {">>"}
-          </button>{" "}
-          <span>
-            Page{" "}
-            <strong>
-              {pageIndex + 1} of {pageOptions.length}
-            </strong>{" "}
-          </span>
-          <span>
-            | Go to page:{""}
-            <input
-              className="input input-primary"
-              type="number"
-              defaultValue={pageIndex + 1}
-              onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                gotoPage(page);
-              }}
-              style={{ width: "100px" }}
-            />
-          </span>{" "}
-          <select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-            }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
+          </tr>
+        ))}
+      </thead>
+
+      <tbody>
+        {table.getRowModel().rows.map((row) => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
             ))}
-          </select>
-        </div>
-      </div>
-    </div>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
-}
+};
+
+export default Table;
