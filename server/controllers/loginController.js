@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 
 // * sends back userObj as token in response
 const loginController = async (req, res) => {
+  // TODO: If disabled, should not login
   try {
     const { userId, password } = req.body;
     const user = await Users.findOne({ userId });

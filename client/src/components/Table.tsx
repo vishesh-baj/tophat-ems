@@ -17,6 +17,7 @@ export default function Table({ columns, data }) {
     }),
     []
   );
+
   const {
     getTableProps,
     getTableBodyProps,
