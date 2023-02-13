@@ -4,6 +4,7 @@ import EMS_CLIENT from "../api";
 import { Table } from "../components";
 import { employeeColumns } from "../constants";
 import { addEmployees } from "../slices/app/EmployeeSlice";
+
 const EmployeesPage: FC = () => {
   const dispatch = useDispatch();
   const fetchAllEmployees = async () => {
@@ -21,6 +22,7 @@ const EmployeesPage: FC = () => {
     <div className="w-screen h-screen">
       <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
       <Table columns={employeeColumns} data={data} />
+      <SuperAdminPage />
     </div>
   );
 };

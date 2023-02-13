@@ -107,3 +107,35 @@ export const employeeColumns = [
     Filter: ColumnFilter,
   },
 ];
+export const usersColumns = [
+  {
+    Header: "userId",
+    accessor: "userId",
+    disableFilters: true,
+    // Filter: ColumnFilter,
+  },
+  {
+    Header: "id",
+    accessor: "id",
+    disableFilters: true,
+    // Filter: ColumnFilter,
+  },
+  {
+    Header: "password",
+    accessor: "password",
+    disableFilters: true,
+    // Filter: ColumnFilter,
+  },
+  {
+    Header: "role",
+    accessor: "role",
+    disableFilters: true,
+    // Filter: ColumnFilter,
+  },
+  {
+    Header: "createdAt",
+    accessor: "createdAt",
+    disableFilters: true,
+    // Filter: ColumnFilter,
+  },
+];

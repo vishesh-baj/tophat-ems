@@ -5,6 +5,7 @@ import { EmployeesPage, CandidatesPage } from "./pages";
 import { DevDashboardLayout } from "./layout";
 import PrivateRoute from "./router/PrivateRoute";
 import ReverseAuthRoute from "./router/ReverseAuthRoute";
+import SuperAdminPage from "./pages/SuperAdminPage";
 
 const App = () => {
   return (
@@ -18,6 +19,9 @@ const App = () => {
         {/* candidate page route */}
         <Route element={<PrivateRoute />}>
           <Route element={<CandidatesPage />} path={PATHS.candidates} />
+        </Route>
+        <Route element={<PrivateRoute />}>
+          <Route element={<SuperAdminPage />} path={PATHS.superAdminPage} />
         </Route>
 
         {/* dev dashboard layout route */}
