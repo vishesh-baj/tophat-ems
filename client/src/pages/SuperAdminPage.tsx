@@ -2,7 +2,7 @@ import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
-import { usersColumns } from "../constants";
+// import { usersColumns } from "../constants";
 import { addUsers } from "../slices/app/UserSlice";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -103,7 +103,7 @@ const SuperAdminPage = () => {
 
       <div className="w-screen h-screen">
         <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
-        <Table columns={usersColumns} data={data} />
+        {/* <Table columns={usersColumns} data={data} /> */}
       </div>
     </div>
   );

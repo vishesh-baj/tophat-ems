@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
@@ -21,7 +21,6 @@ const EmployeesPage = () => {
   const fetchAllEmployees = async () => {
     const response = await EMS_CLIENT.get("all-employees");
     dispatch(addEmployees(response.data.employeesList));
-    console.log("RESPONSE: ", response.data.employeesList);
   };
 
   const columns = [
@@ -116,7 +115,6 @@ const EmployeesPage = () => {
       ),
     }),
   ];
-
   const data = useSelector((state: any) => state.employees);
 
   useEffect(() => {
