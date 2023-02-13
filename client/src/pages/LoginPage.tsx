@@ -10,6 +10,7 @@ import axios from "axios";
 import { BE_CONNECTION_STRING } from "../constants";
 import { useDispatch } from "react-redux";
 import { setToken } from "../slices/app/AppSlice";
+//import SuperAdminPage from "./SuperAdminPage";
 type Props = {};
 interface loginPayload {
   userId: string;
@@ -49,7 +50,7 @@ const LoginPage: FC = (props: Props) => {
     const token = response.data.token;
     dispatch(setToken(token));
     localStorage.setItem("token", token);
-    navigate(PATHS.employees);
+    navigate(PATHS.superAdminPage);
   };
 
   return (

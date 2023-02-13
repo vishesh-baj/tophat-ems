@@ -10,6 +10,7 @@ import {
   RegisterPage,
   ReportsPage,
 } from "../pages";
+import SuperAdminPage from "../pages/SuperAdminPage";
 
 // * auth routes
 export const authRoutes: IRoute[] = [
@@ -22,6 +23,11 @@ export const authRoutes: IRoute[] = [
     key: PATHS.employees,
     path: PATHS.employees,
     Element: EmployeesPage,
+  },
+  {
+    key: PATHS.superAdminPage,
+    path: PATHS.superAdminPage,
+    Element: SuperAdminPage,
   },
   {
     key: PATHS.candidates,
