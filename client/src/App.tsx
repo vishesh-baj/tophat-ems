@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { LoginPage } from "./pages";
 import { PATHS } from "./router/paths";
 import { EmployeesPage, CandidatesPage } from "./pages";
@@ -34,6 +34,8 @@ const App = () => {
         <Route element={<ReverseAuthRoute />}>
           <Route element={<LoginPage />} path={PATHS.login} />
         </Route>
+
+        <Route path={PATHS.root} element={<Navigate to={PATHS.login} />} />
       </Routes>
     </div>
   );

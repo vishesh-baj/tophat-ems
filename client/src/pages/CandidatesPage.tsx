@@ -8,7 +8,7 @@ import { addCandidate } from "../slices/app/CandidateSlice";
 
 const columnHelper = createColumnHelper<ICandidates>();
 
-const EmployeesPage = () => {
+const CandidatesPage = () => {
   const checkboxRef = useRef<HTMLInputElement>(null);
   // TODO: Create edit and delete
   const handleEdit = (row: any) => {
@@ -117,7 +117,7 @@ const EmployeesPage = () => {
     }),
   ];
 
-  const data = useSelector((state: any) => state.employees);
+  const data = useSelector((state: any) => state);
 
   useEffect(() => {
     fetchAllEmployees();
@@ -125,8 +125,9 @@ const EmployeesPage = () => {
 
   return (
     <div className="w-screen h-screen">
-      <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
+      <h1 className="text-center py-5 text-3xl">Candidate Dashboard</h1>
       <div className="overflow-x-auto mx-14">
+        <button className="btn btn-primary">Add Candidate</button>
         <Table tableColumns={columns} tableRows={data} />
       </div>
       {/* Put this part before </body> tag */}
@@ -156,4 +157,4 @@ const EmployeesPage = () => {
   );
 };
 
-export default EmployeesPage;
+export default CandidatesPage;
