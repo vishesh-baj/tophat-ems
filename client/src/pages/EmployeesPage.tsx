@@ -411,7 +411,7 @@ const EmployeesPage = () => {
           </div>
           {/* DELETE EMPLOYEE Button */}
           <div className="flex flex-1 flex-col justify-center gap-5">
-            <h2 className="">Mark attendance of</h2>
+            <h2 className="">Mark attendance of </h2>
 
             <form
               className="flex flex-col gap-4"
