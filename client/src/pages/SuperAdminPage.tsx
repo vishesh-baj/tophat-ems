@@ -3,11 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
 import { usersColumns } from "../constants";
-import { addUsers } from "../slices/app/UserSlice";
-import { useState } from "react";
+import { addUsers, newUsers } from "../slices/app/UserSlice";
+
 import { useForm } from "react-hook-form";
 const SuperAdminPage = () => {
-  const [showModal, setShowModal] = useState(false);
   const dispatch = useDispatch();
   const fetchAllEmployees = async () => {
     const response = await EMS_CLIENT.get("all-users");
@@ -28,10 +27,12 @@ const SuperAdminPage = () => {
       role: "",
     },
   });
+
   const onSubmit = async (data: any) => {
-    // const responses = await EMS_CLIENT.post("add-user", data);
-    // console.log(responses.data);
+    const responses = await EMS_CLIENT.post("add-user", data);
+    console.log(responses.data);
     console.log("FORM DATA", data);
+    dispatch(newUsers({ data }));
   };
   return (
     <div>

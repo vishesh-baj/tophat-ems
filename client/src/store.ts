@@ -4,6 +4,8 @@ import AppReducer from "./slices/app/AppSlice";
 import EmployeeReducer from "./slices/app/EmployeeSlice";
 import CandidatesReducer from "./slices/app/CandidateSlice";
 import UsersReducer from "./slices/app/UserSlice";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { apiSlice } from "./slices/app/ApiSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,7 +14,10 @@ export const store = configureStore({
     employees: EmployeeReducer,
     candidates: CandidatesReducer,
     counter: CounterReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
