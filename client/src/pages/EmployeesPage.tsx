@@ -148,7 +148,7 @@ const EmployeesPage = () => {
     Object.keys(data.length > 0 && data[0]).slice(1, 18);
 
   const handleEdit = (row: any) => {
-    console.log("row", row, "Modal ref:", checkboxRef.current);
+    console.log("row Edit", row, "Modal ref:", checkboxRef.current);
   };
 
   const handleDelete = (row: any) => {

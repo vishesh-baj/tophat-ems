@@ -2,7 +2,7 @@ import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
-import { usersColumns } from "../constants";
+//import { usersColumns } from "../constants";
 import { addUsers, newUsers } from "../slices/app/UserSlice";
 
 import { useForm } from "react-hook-form";
