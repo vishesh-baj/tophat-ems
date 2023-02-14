@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
-import { IEmployees } from "../interfaces";
+import { IAttendance, IEmployees } from "../interfaces";
 import { addEmployees } from "../slices/app/EmployeeSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -83,6 +83,18 @@ const EmployeesPage = () => {
     }),
 
     columnHelper.display({
+      header: "Attendance",
+      cell: (props) => (
+        <button
+          onClick={() => handleAttendance(props.row.original._id)}
+          className="btn btn-accent btn-sm"
+        >
+          Mark Attendance
+        </button>
+      ),
+    }),
+
+    columnHelper.display({
       header: "Edit",
       cell: (props) => (
         <button
@@ -148,7 +160,11 @@ const EmployeesPage = () => {
   const addEmployeeModalRef = useRef<HTMLInputElement>(null);
   const editEmployeeModalRef = useRef<HTMLInputElement>(null);
   const deleteEmployeeModalRef = useRef<HTMLInputElement>(null);
+  const attendanceEmployeeModalRef = useRef<HTMLInputElement>(null);
   const [idToDelete, setIdToDelete] = useState<string>("");
+  const [attendanceId, setAttendanceId] = useState("");
+  const [attendanceObject, setAttendanceObject] = useState<IAttendance>();
+
   const getFormKeys = () =>
     Object.keys(data.length > 0 && data[0]).slice(1, 18);
 
@@ -168,6 +184,25 @@ const EmployeesPage = () => {
       modalRef.current.checked = !modalRef.current.checked;
       console.log("Checkbox is checked:", modalRef.current.checked);
     }
+  };
+
+  const handleAttendance = (employeeId: string) => {
+    setAttendanceId(employeeId);
+    console.log("EMPLOYEE ID FOR ATTENDANCE: ", employeeId);
+    handleClose(attendanceEmployeeModalRef);
+  };
+  const handleAttendanceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAttendanceObject((prevState: any) => {
+      return { ...prevState, [e.target?.name]: e.target.value };
+    });
+    console.log(attendanceObject);
+  };
+
+  const handleAttendanceSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    console.log({ employeeId: attendanceId, ...attendanceObject });
   };
 
   const fetchAllEmployees = async () => {
@@ -205,6 +240,14 @@ const EmployeesPage = () => {
     console.log(response.data);
   };
 
+  const onAttendanceSubmit = (data: any) => {
+    // const response = await EMS_CLIENT.post(
+    //   `mark-attendance/${attendanceId}`,
+    //   data
+    // );
+    console.log(data);
+  };
+
   useEffect(() => {
     fetchAllEmployees();
   }, []);
@@ -225,6 +268,8 @@ const EmployeesPage = () => {
       <div className="overflow-x-auto mx-14">
         <Table tableColumns={columns} tableRows={data} />
       </div>
+
+      {/* ______________________________________________MODALS */}
       {/* add employee modal trigger */}
       <input
         ref={addEmployeeModalRef}
@@ -272,7 +317,7 @@ const EmployeesPage = () => {
       <input
         ref={editEmployeeModalRef}
         type="checkbox"
-        id="employee-modal_add"
+        id="employee-modal_edit"
         className="modal-toggle"
       />
       {/* edit employee modal */}
@@ -314,7 +359,7 @@ const EmployeesPage = () => {
       <input
         ref={deleteEmployeeModalRef}
         type="checkbox"
-        id="employee-modal_add"
+        id="employee-modal_delete"
         className="modal-toggle"
       />
 
@@ -346,6 +391,78 @@ const EmployeesPage = () => {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* attendance modal trigger */}
+      <input
+        ref={attendanceEmployeeModalRef}
+        type="checkbox"
+        id="employee-modal_attendance"
+        className="modal-toggle"
+      />
+      <div className="modal">
+        <div className="modal-box">
+          <div className="flex w-full justify-between">
+            <h3 className="font-bold text-2xl ">Mark Attendance</h3>
+            <span onClick={() => handleClose(attendanceEmployeeModalRef)}>
+              <Close className="h-6 w-6 cursor-pointer text-base-content" />
+            </span>
+          </div>
+          {/* DELETE EMPLOYEE Button */}
+          <div className="flex flex-1 flex-col justify-center gap-5">
+            <h2 className="">Mark attendance of</h2>
+
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={(e) => handleAttendanceSubmit(e)}
+            >
+              <div className="form-control">
+                <input
+                  onChange={(e) => handleAttendanceChange(e)}
+                  className="input input-primary"
+                  type="date"
+                  name="date"
+                />
+              </div>
+
+              <div className="form-control">
+                <select
+                  onChange={(e) => handleAttendanceChange(e)}
+                  className="select select-primary"
+                  name="status"
+                  id="status"
+                >
+                  <option value="select attendance status" defaultChecked>
+                    Select Attendance Status
+                  </option>
+                  <option value="present">Present</option>
+                  <option value="abscent">Abscent</option>
+                  <option value="halfDay">Half Day</option>
+                </select>
+              </div>
+              <div className="form-control">
+                <textarea
+                  onChange={(e) => handleAttendanceChange(e)}
+                  className="textarea textarea-bordered"
+                  name="notes"
+                  id="notes"
+                  placeholder="Enter note if any"
+                ></textarea>
+              </div>
+              <div className="flex w-full flex-col justify-center gap-4 ">
+                <button type="submit" className="btn btn-outline btn-error">
+                  Mark Attendance
+                </button>
+                <button
+                  onClick={() => handleClose(attendanceEmployeeModalRef)}
+                  className="btn btn-outline btn-success"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>

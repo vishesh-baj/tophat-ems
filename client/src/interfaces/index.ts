@@ -55,4 +55,10 @@ export interface IRoute {
   Element: React.FC;
 }
 
-
+export interface IAttendance {
+  _id?: string;
+  employeeId: string;
+  date: string;
+  status: string;
+  notes?: string;
+}
