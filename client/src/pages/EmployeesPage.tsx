@@ -9,8 +9,9 @@ import { IEmployees } from "../interfaces";
 import { addEmployees } from "../slices/app/EmployeeSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-const columnHelper = createColumnHelper<IEmployees>();
+import { Close } from "../assets";
 
+const columnHelper = createColumnHelper<IEmployees>();
 const EmployeesPage = () => {
   // TODO: fetch associatedHrId from token and pass instead of static string value
   const columns = [
@@ -105,6 +106,7 @@ const EmployeesPage = () => {
     }),
   ];
   const schema = yup.object({
+    _id: yup.string(),
     firstName: yup.string().required("first name is required"),
     lastName: yup.string().required("last name is required"),
     primaryContactNumber: yup
@@ -140,26 +142,33 @@ const EmployeesPage = () => {
     permissions: yup.string().required("permissions are required"),
     associatedUserId: yup.string(),
   });
-
   type FormData = yup.InferType<typeof schema>;
   const dispatch = useDispatch();
-  const checkboxRef = useRef<HTMLInputElement>(null);
+  const addEmployeeModalRef = useRef<HTMLInputElement>(null);
+  const editEmployeeModalRef = useRef<HTMLInputElement>(null);
+  const deleteEmployeeModalRef = useRef<HTMLInputElement>(null);
+  const [idToDelete, setIdToDelete] = useState<string>("");
   const getFormKeys = () =>
     Object.keys(data.length > 0 && data[0]).slice(1, 18);
 
   const handleEdit = (row: any) => {
-    console.log("row Edit", row, "Modal ref:", checkboxRef.current);
+    handleClose(editEmployeeModalRef);
+    reset(row);
+    console.log("row", row, "Modal ref:", addEmployeeModalRef.current);
   };
 
   const handleDelete = (row: any) => {
-    console.log("row", row);
+    handleClose(deleteEmployeeModalRef);
+    setIdToDelete(row._id);
   };
-  const handleAddEmployee = (row: any) => {
-    if (checkboxRef.current) {
-      checkboxRef.current.checked = !checkboxRef.current.checked;
-      console.log("Checkbox is checked:", checkboxRef.current.checked);
+
+  const handleClose = (modalRef: any) => {
+    if (modalRef.current) {
+      modalRef.current.checked = !modalRef.current.checked;
+      console.log("Checkbox is checked:", modalRef.current.checked);
     }
   };
+
   const fetchAllEmployees = async () => {
     const response = await EMS_CLIENT.get("all-employees");
     dispatch(addEmployees(response.data.employeesList));
@@ -170,15 +179,29 @@ const EmployeesPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ resolver: yupResolver(schema) });
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
-  const onSubmit = async (data: FormData) => {
+  const onAddSubmit = async (data: FormData) => {
     const response = await EMS_CLIENT.post("add-employee", data);
     alert(response.data);
-    if (checkboxRef.current) {
-      checkboxRef.current.checked = !checkboxRef.current.checked;
-      console.log("Checkbox is checked:", checkboxRef.current.checked);
+    if (addEmployeeModalRef.current) {
+      addEmployeeModalRef.current.checked =
+        !addEmployeeModalRef.current.checked;
+      console.log("Checkbox is checked:", addEmployeeModalRef.current.checked);
     }
+  };
+  const onEditSubmit = async (data: FormData) => {
+    const response = await EMS_CLIENT.put(`edit-employee/${data._id}`, data);
+    console.log(response.data);
+    handleClose(editEmployeeModalRef);
+  };
+  const onDeleteSubmit = async () => {
+    const response = await EMS_CLIENT.delete(`delete-employee/${idToDelete}`);
+    handleClose(deleteEmployeeModalRef);
+    console.log(response.data);
   };
 
   useEffect(() => {
@@ -188,25 +211,40 @@ const EmployeesPage = () => {
   return (
     <div className="w-screen h-screen">
       <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
-      <div className="overflow-x-auto mx-14">
-        <button onClick={handleAddEmployee} className="btn btn-info">
+      <div className="flex justify-end py-4 mx-14">
+        {/* TODO: ADD SEARCH INPUT */}
+
+        <button
+          onClick={() => handleClose(addEmployeeModalRef)}
+          className="btn btn-info"
+        >
           Add Employee
         </button>
+      </div>
+      <div className="overflow-x-auto mx-14">
         <Table tableColumns={columns} tableRows={data} />
       </div>
-      {/* Put this part before </body> tag */}
+      {/* add employee modal trigger */}
       <input
-        ref={checkboxRef}
+        ref={addEmployeeModalRef}
         type="checkbox"
         id="employee-modal_add"
         className="modal-toggle"
       />
+
+      {/* add employee modal */}
       <div className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-2xl ">Add Employee</h3>
+          <div className="flex w-full justify-between">
+            <h3 className="font-bold text-2xl ">Add Employee</h3>
+            <span onClick={() => handleClose(addEmployeeModalRef)}>
+              <Close className="h-6 w-6 cursor-pointer text-base-content" />
+            </span>
+          </div>
+          {/* ADD EMPLOYEE FORM */}
           <form
             className="py-4 flex flex-col gap-4"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onAddSubmit)}
           >
             {getFormKeys().map((formInput) => (
               <div key={formInput} className="form-control">
@@ -217,18 +255,97 @@ const EmployeesPage = () => {
                   className="input input-primary"
                   type="text"
                 />
-                <p className="text-rose-500">{errors[formInput]?.message}</p>
+                <p className="text-rose-500 pt-4">
+                  {errors[formInput]?.message}
+                </p>
               </div>
             ))}
-
             <button type="submit" className="btn">
               add
             </button>
           </form>
-          <p className="py-4">
-            You've been selected for a chance to get one year of subscription to
-            use Wikipedia for free!
-          </p>
+        </div>
+      </div>
+
+      {/* edit employee modal trigger */}
+      <input
+        ref={editEmployeeModalRef}
+        type="checkbox"
+        id="employee-modal_add"
+        className="modal-toggle"
+      />
+      {/* edit employee modal */}
+      <div className="modal">
+        <div className="modal-box">
+          <div className="flex w-full justify-between">
+            <h3 className="font-bold text-2xl ">Edit Employee</h3>
+            <span onClick={() => handleClose(editEmployeeModalRef)}>
+              <Close className="h-6 w-6 cursor-pointer text-base-content" />
+            </span>
+          </div>
+          {/* EDIT EMPLOYEE FORM */}
+          <form
+            className="py-4 flex flex-col gap-4"
+            onSubmit={handleSubmit(onEditSubmit)}
+          >
+            {getFormKeys().map((formInput) => (
+              <div key={formInput} className="form-control">
+                <input
+                  {...register(formInput)}
+                  name={formInput}
+                  placeholder={startCase(formInput)}
+                  className="input input-primary"
+                  type="text"
+                />
+                <p className="text-rose-500 pt-4">
+                  {errors[formInput]?.message}
+                </p>
+              </div>
+            ))}
+            <button type="submit" className="btn">
+              add
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* delete employee modal trigger */}
+      <input
+        ref={deleteEmployeeModalRef}
+        type="checkbox"
+        id="employee-modal_add"
+        className="modal-toggle"
+      />
+
+      {/* delete employee modal */}
+      <div className="modal">
+        <div className="modal-box">
+          <div className="flex w-full justify-between">
+            <h3 className="font-bold text-2xl ">Delete Employee</h3>
+            <span onClick={() => handleClose(deleteEmployeeModalRef)}>
+              <Close className="h-6 w-6 cursor-pointer text-base-content" />
+            </span>
+          </div>
+          {/* DELETE EMPLOYEE Button */}
+          <div className="flex flex-1 flex-col justify-center gap-5">
+            <h2 className="">
+              Are you sure you want to delete the selected entry?
+            </h2>
+            <div className="flex w-full flex-col justify-center gap-4 ">
+              <button
+                onClick={onDeleteSubmit}
+                className="btn btn-outline btn-error"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => handleClose(deleteEmployeeModalRef)}
+                className="btn btn-outline btn-success"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
