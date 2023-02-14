@@ -1,33 +1,20 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import { useEffect, useRef } from "react";
+import { startCase } from "lodash";
+import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
 import { ICandidates } from "../interfaces";
 import { addCandidate } from "../slices/app/CandidateSlice";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { Close } from "../assets";
 
 const columnHelper = createColumnHelper<ICandidates>();
 
 const CandidatesPage = () => {
-  const checkboxRef = useRef<HTMLInputElement>(null);
-  // TODO: Create edit and delete
-  const handleEdit = (row: any) => {
-    // console.log("row", row, "Modal ref:", modalRef.current);
-    if (checkboxRef.current) {
-      checkboxRef.current.checked = !checkboxRef.current.checked;
-      console.log("Checkbox is checked:", checkboxRef.current.checked);
-    }
-  };
-
-  const handleDelete = (row: any) => {
-    console.log("row", row);
-  };
-
-  const dispatch = useDispatch();
-  const fetchAllEmployees = async () => {
-    const response = await EMS_CLIENT.get("get-all-candidates");
-    dispatch(addCandidate(response.data.candidatesList));
-  };
+  // TODO: fetch associatedHrId from token and pass instead of static string value
 
   const columns = [
     columnHelper.accessor("firstName", {
@@ -117,7 +104,105 @@ const CandidatesPage = () => {
     }),
   ];
 
-  const data = useSelector((state: any) => state);
+  const schema = yup.object({
+    _id: yup.string(),
+    firstName: yup.string().required("first name is required"),
+    lastName: yup.string().required("last name is required"),
+    primaryContactNumber: yup
+      .string()
+      .required("contact number is required")
+      .min(10, "enter valid contact number"),
+    secondaryContactNumber: yup
+      .string()
+      .required("secondary contact is required")
+      .min(10, "enter valid contact number"),
+    primaryAddress: yup
+      .string()
+      .required("primary address is required")
+      .max(250, "cannot exceed 250 characters"),
+    secondaryAddress: yup
+      .string()
+      .required("secondary address is required")
+      .max(250, "cannot exceed 250 characters"),
+    officialEmail: yup
+      .string()
+      .email("enter valid email")
+      .required("email is required"),
+    personalEmail: yup
+      .string()
+      .email("enter valid email")
+      .required("personal email is required"),
+    dateOfBirth: yup.string().required("date of birth is required"),
+    designation: yup.string().required("designation is required"),
+    department: yup.string().required("department is required"),
+    experience: yup.string().required("experience is required"),
+    dateOfJoining: yup.string().required("date of joining is required"),
+    role: yup.string().required("role is required"),
+    permissions: yup.string().required("permissions are required"),
+    associatedUserId: yup.string(),
+  });
+
+  type FormData = yup.InferType<typeof schema>;
+  const dispatch = useDispatch();
+  const addCandidateModalRef = useRef<HTMLInputElement>(null);
+  const editCandidateModalRef = useRef<HTMLInputElement>(null);
+  const deleteCandidateModalRef = useRef<HTMLInputElement>(null);
+  const [idToDelete, setIdToDelete] = useState<string>("");
+  const getFormKeys = () =>
+    Object.keys(data.length > 0 && data[0]).slice(1, 18);
+
+  const handleEdit = (row: any) => {
+    handleClose(editCandidateModalRef);
+    reset(row);
+    console.log("row", row, "Modal ref:", addCandidateModalRef.current);
+  };
+
+  const handleDelete = (row: any) => {
+    handleClose(deleteCandidateModalRef);
+    setIdToDelete(row._id);
+  };
+
+  const handleClose = (modalRef: any) => {
+    if (modalRef.current) {
+      modalRef.current.checked = !modalRef.current.checked;
+      console.log("Checkbox is checked:", modalRef.current.checked);
+    }
+  };
+
+  const fetchAllEmployees = async () => {
+    const response = await EMS_CLIENT.get("get-all-candidates");
+    dispatch(addCandidate(response.data.candidatesList));
+  };
+  const data = useSelector((state: any) => state.candidates);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onAddSubmit = async (data: FormData) => {
+    const response = await EMS_CLIENT.post("add-candidate", data);
+    alert(response.data);
+    if (addCandidateModalRef.current) {
+      addCandidateModalRef.current.checked =
+        !addCandidateModalRef.current.checked;
+      console.log("Checkbox is checked:", addCandidateModalRef.current.checked);
+    }
+  };
+  const onEditSubmit = async (data: FormData) => {
+    const response = await EMS_CLIENT.put(`edit-candidate/${data._id}`, data);
+    console.log(response.data);
+    handleClose(editCandidateModalRef);
+  };
+  const onDeleteSubmit = async () => {
+    const response = await EMS_CLIENT.delete(`delete-candidate/${idToDelete}`);
+    handleClose(deleteCandidateModalRef);
+    console.log(response.data);
+  };
 
   useEffect(() => {
     fetchAllEmployees();
@@ -126,30 +211,140 @@ const CandidatesPage = () => {
   return (
     <div className="w-screen h-screen">
       <h1 className="text-center py-5 text-3xl">Candidate Dashboard</h1>
+      <div className="flex justify-end py-4 mx-14">
+        {/* TODO: ADD SEARCH INPUT */}
+
+        <button
+          onClick={() => handleClose(addCandidateModalRef)}
+          className="btn btn-info"
+        >
+          Add Candidate
+        </button>
+      </div>
       <div className="overflow-x-auto mx-14">
-        <button className="btn btn-primary">Add Candidate</button>
         <Table tableColumns={columns} tableRows={data} />
       </div>
-      {/* Put this part before </body> tag */}
+      {/* add employee modal trigger */}
       <input
-        ref={checkboxRef}
+        ref={addCandidateModalRef}
         type="checkbox"
-        id="employee-modal"
+        id="employee-modal_add"
         className="modal-toggle"
       />
+
+      {/* add employee modal */}
       <div className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">
-            Congratulations random Internet user!
-          </h3>
-          <p className="py-4">
-            You've been selected for a chance to get one year of subscription to
-            use Wikipedia for free!
-          </p>
-          <div className="modal-action">
-            <label htmlFor="employee-modal" className="btn">
-              Yay!
-            </label>
+          <div className="flex w-full justify-between">
+            <h3 className="font-bold text-2xl ">Add Candidate</h3>
+            <span onClick={() => handleClose(addCandidateModalRef)}>
+              <Close className="h-6 w-6 cursor-pointer text-base-content" />
+            </span>
+          </div>
+          {/* ADD EMPLOYEE FORM */}
+          <form
+            className="py-4 flex flex-col gap-4"
+            onSubmit={handleSubmit(onAddSubmit)}
+          >
+            {getFormKeys().map((formInput) => (
+              <div key={formInput} className="form-control">
+                <input
+                  {...register(formInput)}
+                  name={formInput}
+                  placeholder={startCase(formInput)}
+                  className="input input-primary"
+                  type="text"
+                />
+                <p className="text-rose-500 pt-4">
+                  {errors[formInput]?.message}
+                </p>
+              </div>
+            ))}
+            <button type="submit" className="btn">
+              add
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* edit employee modal trigger */}
+      <input
+        ref={editCandidateModalRef}
+        type="checkbox"
+        id="employee-modal_add"
+        className="modal-toggle"
+      />
+      {/* edit employee modal */}
+      <div className="modal">
+        <div className="modal-box">
+          <div className="flex w-full justify-between">
+            <h3 className="font-bold text-2xl ">Edit Candidate</h3>
+            <span onClick={() => handleClose(editCandidateModalRef)}>
+              <Close className="h-6 w-6 cursor-pointer text-base-content" />
+            </span>
+          </div>
+          {/* EDIT EMPLOYEE FORM */}
+          <form
+            className="py-4 flex flex-col gap-4"
+            onSubmit={handleSubmit(onEditSubmit)}
+          >
+            {getFormKeys().map((formInput) => (
+              <div key={formInput} className="form-control">
+                <input
+                  {...register(formInput)}
+                  name={formInput}
+                  placeholder={startCase(formInput)}
+                  className="input input-primary"
+                  type="text"
+                />
+                <p className="text-rose-500 pt-4">
+                  {errors[formInput]?.message}
+                </p>
+              </div>
+            ))}
+            <button type="submit" className="btn">
+              add
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {/* delete employee modal trigger */}
+      <input
+        ref={deleteCandidateModalRef}
+        type="checkbox"
+        id="employee-modal_add"
+        className="modal-toggle"
+      />
+
+      {/* delete employee modal */}
+      <div className="modal">
+        <div className="modal-box">
+          <div className="flex w-full justify-between">
+            <h3 className="font-bold text-2xl ">Delete Candidate</h3>
+            <span onClick={() => handleClose(deleteCandidateModalRef)}>
+              <Close className="h-6 w-6 cursor-pointer text-base-content" />
+            </span>
+          </div>
+          {/* DELETE EMPLOYEE Button */}
+          <div className="flex flex-1 flex-col justify-center gap-5">
+            <h2 className="">
+              Are you sure you want to delete the selected entry?
+            </h2>
+            <div className="flex w-full flex-col justify-center gap-4 ">
+              <button
+                onClick={onDeleteSubmit}
+                className="btn btn-outline btn-error"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => handleClose(deleteCandidateModalRef)}
+                className="btn btn-outline btn-success"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>
