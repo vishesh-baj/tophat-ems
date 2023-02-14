@@ -155,6 +155,7 @@ const EmployeesPage = () => {
     permissions: yup.string().required("permissions are required"),
     associatedUserId: yup.string(),
   });
+
   type FormData = yup.InferType<typeof schema>;
   const dispatch = useDispatch();
   const addEmployeeModalRef = useRef<HTMLInputElement>(null);
@@ -183,6 +184,7 @@ const EmployeesPage = () => {
     if (modalRef.current) {
       modalRef.current.checked = !modalRef.current.checked;
       console.log("Checkbox is checked:", modalRef.current.checked);
+      reset({});
     }
   };
 
@@ -202,7 +204,12 @@ const EmployeesPage = () => {
     e: React.FormEvent<HTMLFormElement>
   ) => {
     e.preventDefault();
-    console.log({ employeeId: attendanceId, ...attendanceObject });
+    const response = await EMS_CLIENT.post(`mark-attendance/${attendanceId}`, {
+      employeeId: attendanceId,
+      ...attendanceObject,
+    });
+    console.log("MARK ATTENDANCE RESPONSE: ", response.data);
+    handleClose(attendanceEmployeeModalRef);
   };
 
   const fetchAllEmployees = async () => {
@@ -238,14 +245,6 @@ const EmployeesPage = () => {
     const response = await EMS_CLIENT.delete(`delete-employee/${idToDelete}`);
     handleClose(deleteEmployeeModalRef);
     console.log(response.data);
-  };
-
-  const onAttendanceSubmit = (data: any) => {
-    // const response = await EMS_CLIENT.post(
-    //   `mark-attendance/${attendanceId}`,
-    //   data
-    // );
-    console.log(data);
   };
 
   useEffect(() => {
@@ -452,7 +451,7 @@ const EmployeesPage = () => {
                 ></textarea>
               </div>
               <div className="flex w-full flex-col justify-center gap-4 ">
-                <button type="submit" className="btn btn-outline btn-error">
+                <button type="submit" className="btn btn-outline btn-warning">
                   Mark Attendance
                 </button>
                 <button
