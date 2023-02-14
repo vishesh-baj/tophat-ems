@@ -1,6 +1,7 @@
 const Users = require("../schemas/Users");
 const bcrypt = require("bcrypt");
 
+// * get all users
 const getAllUsers = async (req, res) => {
   try {
     const usersList = await Users.find({});
@@ -10,13 +11,14 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// * add a new user
 const addUser = async (req, res) => {
   const { userId, role, password } = req.body;
   const userExists = await Users.findOne({ userId });
   if (userExists)
     return res.status(201).json({ message: "User Already Exists" });
-  const salt = bcrypt.genSalt();
-  const hashedPassword = bcrypt.hash(password, salt);
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
 
   const newUser = new Users({ userId, role, password: hashedPassword });
   const savedUser = await newUser.save();
@@ -30,6 +32,7 @@ const addUser = async (req, res) => {
   }
 };
 
+// * delete a user
 const deleteUser = async (req, res) => {
   const { id } = req.params;
   const userToDelete = await Users.findByIdAndDelete(id);

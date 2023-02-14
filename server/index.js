@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const loginRoute = require("./routes/login");
 const userRoute = require("./routes/user");
 const employeeRoute = require("./routes/employee");
+const candidateRoute = require("./routes/candidate");
 
 // Connect to MongoDB
 mongoose
@@ -16,7 +17,7 @@ mongoose
 // Create express app
 const app = express();
 
-// to avoid cors errors in front end
+// * to avoid cors errors in front end
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -30,7 +31,6 @@ app.use(function (req, res, next) {
 app.use(helmet());
 // cross origin resourse sharing
 app.use(cors());
-// app.use(corsHeaders());
 // Parse JSON request body
 app.use(express.json());
 
@@ -38,6 +38,7 @@ app.use(express.json());
 app.use("/api/auth", loginRoute);
 app.use("/api", userRoute);
 app.use("/api", employeeRoute);
+app.use("/api", candidateRoute);
 
 // Start server
 const PORT = process.env.PORT || 3000;

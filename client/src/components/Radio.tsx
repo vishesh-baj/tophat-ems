@@ -1,9 +1,13 @@
-import React from "react";
+import React, { FC } from "react";
 
 type Props = {};
 
-const Radio = (props: Props) => {
-  return <div>Radio</div>;
+const Radio: FC = (props: Props) => {
+  return (
+    <>
+      <input type="radio" className="radio-info" name="" id="" />
+    </>
+  );
 };
 
 export default Radio;

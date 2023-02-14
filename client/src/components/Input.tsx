@@ -1,6 +1,8 @@
-import React from "react";
+import { FC } from "react";
 
-type Props = {};
+type Props = {
+  type?: string;
+};
 
 const Input = (props: Props) => {
   return <div>Input</div>;

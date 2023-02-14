@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// required false for testing
 const EmployeeSchema = new mongoose.Schema(
   {
     firstName: {
@@ -55,13 +56,17 @@ const EmployeeSchema = new mongoose.Schema(
       type: String,
     },
     documents: {
-      type: Array,
+      type: String,
     },
     role: {
       type: String,
     },
     permissions: {
-      type: Boolean,
+      type: String,
+    },
+    associatedUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
     },
   },
   {

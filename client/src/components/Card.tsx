@@ -1,8 +1,8 @@
-import React from "react";
+import React, { FC } from "react";
 
 type Props = {};
 
-const Card = (props: Props) => {
+const Card: FC = (props: Props) => {
   return <div>Card</div>;
 };
 

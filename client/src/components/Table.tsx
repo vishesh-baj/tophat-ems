@@ -1,47 +1,77 @@
-import React, { useState, ReactNode } from "react";
-
-type Props = {
-  children: ReactNode;
+import React, { useState, useMemo } from "react";
+import {
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import { AscendingIcon, DescendingIcon } from "../assets";
+type TableProps = {
+  tableRows: {}[];
+  tableColumns: any;
 };
 
-const Table = (props: Props) => {
+const Table = ({ tableRows, tableColumns }: TableProps) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const data = tableRows;
+  const columns = tableColumns;
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+  });
+
   return (
-    <div className="overflow-x-auto">
-      <table className="table w-full">
-        {/* <!-- head --> */}
-        <thead>
-          <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Job</th>
-            <th>Favorite Color</th>
+    <table className="table table-zebra w-full">
+      <thead>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <th key={header.id}>
+                {header.isPlaceholder ? null : (
+                  <div
+                    {...{
+                      className: header.column.getCanSort()
+                        ? "cursor-pointer select-none flex gap-1"
+                        : "",
+                      onClick: header.column.getToggleSortingHandler(),
+                    }}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {{
+                      asc: <AscendingIcon />,
+                      desc: <DescendingIcon />,
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </div>
+                )}
+              </th>
+            ))}
           </tr>
-        </thead>
-        <tbody>
-          {/* <!-- row 1 --> */}
-          <tr>
-            <th>1</th>
-            <td>Cy Ganderton</td>
-            <td>Quality Control Specialist</td>
-            <td>Blue</td>
+        ))}
+      </thead>
+
+      <tbody>
+        {table.getRowModel().rows.map((row) => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
           </tr>
-          {/* <!-- row 2 --> */}
-          <tr>
-            <th>2</th>
-            <td>Hart Hagerty</td>
-            <td>Desktop Support Technician</td>
-            <td>Purple</td>
-          </tr>
-          {/* <!-- row 3 --> */}
-          <tr>
-            <th>3</th>
-            <td>Brice Swyre</td>
-            <td>Tax Accountant</td>
-            <td>Red</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+        ))}
+      </tbody>
+    </table>
   );
 };
 
