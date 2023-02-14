@@ -7,7 +7,6 @@ import {
   getFilteredRowModel,
   useReactTable,
   getPaginationRowModel,
-  PaginationState,
 } from "@tanstack/react-table";
 import { AscendingIcon, DescendingIcon } from "../assets";
 
@@ -21,20 +20,19 @@ const Table = ({ tableRows, tableColumns }: TableProps) => {
   const [globalFilter, setGlobalFilter] = React.useState("");
   const data = tableRows;
   const columns = tableColumns;
-
   const table = useReactTable({
     data,
     columns,
-    getPaginationRowModel: getPaginationRowModel(),
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
       globalFilter,
     },
-    onGlobalFilterChange: setGlobalFilter,
-    getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
