@@ -104,7 +104,7 @@ const SuperAdminPage = () => {
 
       <div className="w-screen h-screen">
         <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
-        <Table columns={usersColumns} data={data} />
+        {/* <Table columns={usersColumns} data={data} /> */}
       </div>
     </div>
   );
