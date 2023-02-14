@@ -13,7 +13,6 @@ const initialState: any = [];
 const usersSlice = createSlice({
   name: "users",
   initialState,
-
   reducers: {
     addUsers: (state, action) => {
       state = state.push(...action.payload);

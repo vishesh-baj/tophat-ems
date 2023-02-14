@@ -105,6 +105,7 @@ const EmployeesPage = () => {
       ),
     }),
   ];
+
   const schema = yup.object({
     _id: yup.string(),
     firstName: yup.string().required("first name is required"),

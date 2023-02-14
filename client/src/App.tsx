@@ -9,7 +9,7 @@ import SuperAdminPage from "./pages/SuperAdminPage";
 
 const App = () => {
   return (
-    <div className="body-default">
+    <div data-theme="synthwave" className="body-default">
       <Routes>
         {/* employee page route */}
         <Route element={<PrivateRoute />}>
