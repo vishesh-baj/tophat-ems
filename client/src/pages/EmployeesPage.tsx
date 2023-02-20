@@ -1,19 +1,46 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { startCase } from "lodash";
-import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
 import { IAttendance, IEmployees } from "../interfaces";
-import { addEmployees } from "../slices/app/EmployeeSlice";
+// import { addEmployees } from "../slices/app/EmployeeSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Close } from "../assets";
+// import { useGetAllProductsQuery } from "../services/apiSlice";
 
 const columnHelper = createColumnHelper<IEmployees>();
+
+type FormValues = {
+  firstName: string;
+  lastName: string;
+  primararyContactNumber: string;
+  secondaryContactNumber: string;
+  primaryAddress: string;
+  secondaryAddress: string;
+  officialEmail: string;
+  personalEmail: string;
+  dateOfBirth: string;
+  department: string;
+  designation: string;
+  dateOfJoining: string;
+  experience: string;
+};
 const EmployeesPage = () => {
-  // TODO: fetch associatedHrId from token and pass instead of static string value
+  // const { data = [], error, isLoading } = useGetAllProductsQuery([]);
+
+  // useEffect(() => {
+  //   console.log(`isLaoding -> ${isLoading}`);
+  // }, [isLoading, data]);
+
+  // console.log("DATA FETCHED FROM QUERY:", data ? data : []);
+  // console.log("Error FETCHED FROM QUERY:", error ? error : []);
+
+  useEffect(() => {}, []);
+
   const columns = [
     columnHelper.accessor("firstName", {
       cell: (info) => info.getValue(),
@@ -118,46 +145,47 @@ const EmployeesPage = () => {
     }),
   ];
 
-  const schema = yup.object({
-    _id: yup.string(),
-    firstName: yup.string().required("first name is required"),
-    lastName: yup.string().required("last name is required"),
-    primaryContactNumber: yup
-      .string()
-      .required("contact number is required")
-      .min(10, "enter valid contact number"),
-    secondaryContactNumber: yup
-      .string()
-      .required("secondary contact is required")
-      .min(10, "enter valid contact number"),
-    primaryAddress: yup
-      .string()
-      .required("primary address is required")
-      .max(250, "cannot exceed 250 characters"),
-    secondaryAddress: yup
-      .string()
-      .required("secondary address is required")
-      .max(250, "cannot exceed 250 characters"),
-    officialEmail: yup
-      .string()
-      .email("enter valid email")
-      .required("email is required"),
-    personalEmail: yup
-      .string()
-      .email("enter valid email")
-      .required("personal email is required"),
-    dateOfBirth: yup.string().required("date of birth is required"),
-    designation: yup.string().required("designation is required"),
-    department: yup.string().required("department is required"),
-    experience: yup.string().required("experience is required"),
-    dateOfJoining: yup.string().required("date of joining is required"),
-    role: yup.string().required("role is required"),
-    permissions: yup.string().required("permissions are required"),
-    associatedUserId: yup.string(),
-  });
+  // const schema = yup.object({
+  //   _id: yup.string(),
+  //   firstName: yup.string().required("first name is required"),
+  //   lastName: yup.string().required("last name is required"),
+  //   primaryContactNumber: yup
+  //     .string()
+  //     .required("contact number is required")
+  //     .min(10, "enter valid contact number"),
+  //   secondaryContactNumber: yup
+  //     .string()
+  //     .required("secondary contact is required")
+  //     .min(10, "enter valid contact number"),
+  //   primaryAddress: yup
+  //     .string()
+  //     .required("primary address is required")
+  //     .max(250, "cannot exceed 250 characters"),
+  //   secondaryAddress: yup
+  //     .string()
+  //     .required("secondary address is required")
+  //     .max(250, "cannot exceed 250 characters"),
+  //   officialEmail: yup
+  //     .string()
+  //     .email("enter valid email")
+  //     .required("email is required"),
+  //   personalEmail: yup
+  //     .string()
+  //     .email("enter valid email")
+  //     .required("personal email is required"),
+  //   dateOfBirth: yup.string().required("date of birth is required"),
+  //   designation: yup.string().required("designation is required"),
+  //   department: yup.string().required("department is required"),
+  //   experience: yup.string().required("experience is required"),
+  //   dateOfJoining: yup.string().required("date of joining is required"),
+  //   role: yup.string().required("role is required"),
+  //   permissions: yup.string().required("permissions are required"),
+  //   associatedUserId: yup.string(),
+  // });
 
-  type FormData = yup.InferType<typeof schema>;
+  // type FormData = yup.InferType<typeof schema>;
   const dispatch = useDispatch();
+  const newEmployeeModalRef = useRef<HTMLInputElement>(null);
   const addEmployeeModalRef = useRef<HTMLInputElement>(null);
   const editEmployeeModalRef = useRef<HTMLInputElement>(null);
   const deleteEmployeeModalRef = useRef<HTMLInputElement>(null);
@@ -214,26 +242,84 @@ const EmployeesPage = () => {
 
   const fetchAllEmployees = async () => {
     const response = await EMS_CLIENT.get("all-employees");
-    dispatch(addEmployees(response.data.employeesList));
+    console.log(response.data);
+    // dispatch(addEmployees(response.data.employeesList));
   };
   const data = useSelector((state: any) => state.employees);
 
   const {
     register,
     handleSubmit,
+
     formState: { errors },
     reset,
-  } = useForm({
-    resolver: yupResolver(schema),
+  } = useForm<FormValues>({
+    // resolver: yupResolver(),
   });
+
+  //  type FormValues = {
+  //    firstName: string;
+  //    lastName: string;
+  //    primararyContactNumber: string;
+  //    secondaryContactNumber: string;
+  //    primaryAddress: string;
+  //    secondaryAdress: string;
+  //    officialEmail: string;
+  //    personalEmail: string;
+  //    dateOfBirth: string;
+
+  //  };
+
+  // const resolver: Resolver<FormValues> = async (values) => {
+  //   return {
+  //     values: values.firstName ? values : {},
+  //     errors: !values.firstName
+  //       ? {
+  //           firstName: {
+  //             type: "required",
+  //             message: "This is required.",
+  //           },
+  //         }
+  //       : {},
+  //   };
+  // };
+
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = type FormValues = {
+  //   firstName: string,
+  //   lastName: string,
+  //   email: string,
+  //   primararyContactNumber: string,
+
+  // };
+
+  // const resolver: Resolver<FormValues> = async (values) => {
+  //   return {
+  //     values: values.firstName ? values : {},
+  //     errors: !values.firstName
+  //       ? {
+  //           firstName: {
+  //             type: "required",
+  //             message: "This is required.",
+  //           },
+  //         }
+  //       : {},
+  //   };
+  // };
 
   const onAddSubmit = async (data: FormData) => {
     const response = await EMS_CLIENT.post("add-employee", data);
     alert(response.data);
+    console.log("ugfriehgejrg;o", data);
     if (addEmployeeModalRef.current) {
       addEmployeeModalRef.current.checked =
         !addEmployeeModalRef.current.checked;
       console.log("Checkbox is checked:", addEmployeeModalRef.current.checked);
+    } else {
+      newEmployeeModalRef;
     }
   };
   const onEditSubmit = async (data: FormData) => {
@@ -249,8 +335,10 @@ const EmployeesPage = () => {
 
   useEffect(() => {
     fetchAllEmployees();
+    console.log(getFormKeys());
   }, []);
 
+  const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data);
   return (
     <div className="w-screen h-screen">
       <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
@@ -287,11 +375,12 @@ const EmployeesPage = () => {
             </span>
           </div>
           {/* ADD EMPLOYEE FORM */}
-          <form
+
+          {/* <form
             className="py-4 flex flex-col gap-4"
-            onSubmit={handleSubmit(onAddSubmit)}
-          >
-            {getFormKeys().map((formInput) => (
+            onSubmit={handleSubmit(onSubmit)}
+          > */}
+          {/* {getFormKeys().map((formInput) => (
               <div key={formInput} className="form-control">
                 <input
                   {...register(formInput)}
@@ -304,7 +393,59 @@ const EmployeesPage = () => {
                   {errors[formInput]?.message}
                 </p>
               </div>
-            ))}
+            ))} */}
+          <form
+            className="py-4 flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <label>FirstName</label>
+            <input {...register("firstName")} />
+            <label>LastName</label>
+            <input {...register("lastName")} />
+            <label>email</label>
+            <input {...register("Email")} />
+            <label>primaryContactNumber</label>
+            <input {...register("primaryContactNumber")} />
+            <label>secondaryContactNumber</label>
+            <input {...register("secondaryContactNumber")} />
+            <label>primaryAddress</label>
+            <input {...register("primaryAddress")} />
+            <label>secondaryAddress</label>
+            <input {...register("secondaryAddress")} />
+            <label>officialEmail</label>
+            <input {...register("officialEmail")} />
+            <label>personalEmail</label>
+            <input {...register("personalEmail")} />
+
+            <label>designation</label>
+            <select
+              {...register("designation")}
+              className="select select-bordered m-1"
+            >
+              <option value="">Select</option>
+              <option value="SENIOR">SENIOR</option>
+              <option value="JUNIOR">JUNIOR</option>
+              <option value="TRAINEE">TRAINEE</option>
+            </select>
+
+            <label>department</label>
+            <select
+              {...register("department")}
+              className="select select-bordered m-1"
+            >
+              <option value="">Select</option>
+              <option value="BDE">BDE</option>
+              <option value="HR">HR</option>
+              <option value="DEVELOPER">DEVELOPER</option>
+            </select>
+
+            <label>experience</label>
+            <input {...register("experience")} />
+            <label>DateOfJoining</label>
+            <input {...register("dateOfJoining")} type="date" />
+            <label>role</label>
+            <input {...register("role")} />
+
             <button type="submit" className="btn">
               add
             </button>

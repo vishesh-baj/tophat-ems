@@ -9,7 +9,7 @@ import { PATHS } from "../router/paths";
 import axios from "axios";
 import { BE_CONNECTION_STRING } from "../constants";
 import { useDispatch } from "react-redux";
-import { setToken } from "../slices/app/AppSlice";
+import { setToken } from "../slices/app/appSlice";
 //import SuperAdminPage from "./SuperAdminPage";
 type Props = {};
 interface loginPayload {

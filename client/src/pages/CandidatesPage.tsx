@@ -205,6 +205,8 @@ const CandidatesPage = () => {
   };
 
   useEffect(() => {
+    console.log("dataaa");
+    console.log(() => getFormKeys());
     fetchAllEmployees();
   }, []);
 

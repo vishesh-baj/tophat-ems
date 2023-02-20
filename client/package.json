@@ -11,7 +11,7 @@
   "dependencies": {
     "@heroicons/react": "^2.0.13",
     "@hookform/resolvers": "^2.9.10",
-    "@reduxjs/toolkit": "^1.9.1",
+    "@reduxjs/toolkit": "^1.9.2",
     "@tanstack/react-table": "^8.7.9",
     "@types/react-table": "^7.7.14",
     "autoprefixer": "^10.4.13",

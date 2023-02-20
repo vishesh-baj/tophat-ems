@@ -11,18 +11,12 @@ const EmployeeSchema = new mongoose.Schema(
     },
     primaryContactNumber: {
       type: String,
-
-      unique: true,
     },
     secondaryContactNumber: {
       type: String,
-
-      unique: true,
     },
     primaryAddress: {
       type: String,
-
-      unique: true,
     },
     secondaryAddress: {
       type: String,

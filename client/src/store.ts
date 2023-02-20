@@ -1,11 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import CounterReducer from "./slices/counter/CounterSlice";
-import AppReducer from "./slices/app/AppSlice";
+import AppReducer from "./slices/app/appSlice";
 import EmployeeReducer from "./slices/app/EmployeeSlice";
 import CandidatesReducer from "./slices/app/CandidateSlice";
 import UsersReducer from "./slices/app/UserSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { apiSlice } from "./slices/app/ApiSlice";
+import { employeesApi } from "./services/apiSlice";
+import { appSlice } from "./slices/app/appSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,13 +15,13 @@ export const store = configureStore({
     employees: EmployeeReducer,
     candidates: CandidatesReducer,
     counter: CounterReducer,
-    [apiSlice.reducerPath]: apiSlice.reducer,
+    // appSlice,
+    // [employeesApi.reducerPath]: employeesApi.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+  // middleware: (getDefaultMiddleware) =>
+  //   getDefaultMiddleware().concat(employeesApi.middleware),
 });
 
-// Infer the `RootState` and `AppDispatch` types from the store itself
+setupListeners(store.dispatch);
 export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch;

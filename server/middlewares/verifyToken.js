@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const verifyToken = (req, res, next) => {
+  console.log("reqqq:", req.headers);
   const token = req.headers.token;
-
+  console.log("tokennn:", token);
   if (!token) {
     return res.status(401).send({ auth: false, message: "No token provided." });
   }
@@ -18,4 +19,3 @@ const verifyToken = (req, res, next) => {
 };
 
 module.exports = verifyToken;
-
