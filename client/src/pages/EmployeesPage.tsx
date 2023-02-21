@@ -6,10 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
 import { IAttendance, IEmployees } from "../interfaces";
-// import { addEmployees } from "../slices/app/EmployeeSlice";
+import { addEmployees } from "../slices/app/EmployeeSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Close } from "../assets";
+
 // import { useGetAllProductsQuery } from "../services/apiSlice";
 
 const columnHelper = createColumnHelper<IEmployees>();
@@ -145,45 +146,45 @@ const EmployeesPage = () => {
     }),
   ];
 
-  // const schema = yup.object({
-  //   _id: yup.string(),
-  //   firstName: yup.string().required("first name is required"),
-  //   lastName: yup.string().required("last name is required"),
-  //   primaryContactNumber: yup
-  //     .string()
-  //     .required("contact number is required")
-  //     .min(10, "enter valid contact number"),
-  //   secondaryContactNumber: yup
-  //     .string()
-  //     .required("secondary contact is required")
-  //     .min(10, "enter valid contact number"),
-  //   primaryAddress: yup
-  //     .string()
-  //     .required("primary address is required")
-  //     .max(250, "cannot exceed 250 characters"),
-  //   secondaryAddress: yup
-  //     .string()
-  //     .required("secondary address is required")
-  //     .max(250, "cannot exceed 250 characters"),
-  //   officialEmail: yup
-  //     .string()
-  //     .email("enter valid email")
-  //     .required("email is required"),
-  //   personalEmail: yup
-  //     .string()
-  //     .email("enter valid email")
-  //     .required("personal email is required"),
-  //   dateOfBirth: yup.string().required("date of birth is required"),
-  //   designation: yup.string().required("designation is required"),
-  //   department: yup.string().required("department is required"),
-  //   experience: yup.string().required("experience is required"),
-  //   dateOfJoining: yup.string().required("date of joining is required"),
-  //   role: yup.string().required("role is required"),
-  //   permissions: yup.string().required("permissions are required"),
-  //   associatedUserId: yup.string(),
-  // });
+  const schema = yup.object({
+    _id: yup.string(),
+    firstName: yup.string().required("first name is required"),
+    //   lastName: yup.string().required("last name is required"),
+    //   primaryContactNumber: yup
+    //     .string()
+    //     .required("contact number is required")
+    //     .min(10, "enter valid contact number"),
+    //   secondaryContactNumber: yup
+    //     .string()
+    //     .required("secondary contact is required")
+    //     .min(10, "enter valid contact number"),
+    //   primaryAddress: yup
+    //     .string()
+    //     .required("primary address is required")
+    //     .max(250, "cannot exceed 250 characters"),
+    //   secondaryAddress: yup
+    //     .string()
+    //     .required("secondary address is required")
+    //     .max(250, "cannot exceed 250 characters"),
+    //   officialEmail: yup
+    //     .string()
+    //     .email("enter valid email")
+    //     .required("email is required"),
+    //   personalEmail: yup
+    //     .string()
+    //     .email("enter valid email")
+    //     .required("personal email is required"),
+    //   dateOfBirth: yup.string().required("date of birth is required"),
+    //   designation: yup.string().required("designation is required"),
+    //   department: yup.string().required("department is required"),
+    //   experience: yup.string().required("experience is required"),
+    //   dateOfJoining: yup.string().required("date of joining is required"),
+    //   role: yup.string().required("role is required"),
+    //   permissions: yup.string().required("permissions are required"),
+    //   associatedUserId: yup.string(),
+  });
 
-  // type FormData = yup.InferType<typeof schema>;
+  type FormData = yup.InferType<typeof schema>;
   const dispatch = useDispatch();
   const newEmployeeModalRef = useRef<HTMLInputElement>(null);
   const addEmployeeModalRef = useRef<HTMLInputElement>(null);
@@ -243,7 +244,7 @@ const EmployeesPage = () => {
   const fetchAllEmployees = async () => {
     const response = await EMS_CLIENT.get("all-employees");
     console.log(response.data);
-    // dispatch(addEmployees(response.data.employeesList));
+    dispatch(addEmployees(response.data.employeesList));
   };
   const data = useSelector((state: any) => state.employees);
 
@@ -254,7 +255,7 @@ const EmployeesPage = () => {
     formState: { errors },
     reset,
   } = useForm<FormValues>({
-    // resolver: yupResolver(),
+    resolver: yupResolver(schema),
   });
 
   //  type FormValues = {
@@ -295,6 +296,7 @@ const EmployeesPage = () => {
   //   primararyContactNumber: string,
 
   // };
+  const onSubmits: SubmitHandler<FormValues> = (data) => console.log(data);
 
   // const resolver: Resolver<FormValues> = async (values) => {
   //   return {
@@ -309,18 +311,26 @@ const EmployeesPage = () => {
   //       : {},
   //   };
   // };
+  // useEffect(() => {
+  //   const response = EMS_CLIENT.get("add-employee");
+  //   console.log(response);
+  // }, []);
 
-  const onAddSubmit = async (data: FormData) => {
+  const onAddSubmit: SubmitHandler<FormValues> = async (data) => {
     const response = await EMS_CLIENT.post("add-employee", data);
-    alert(response.data);
-    console.log("ugfriehgejrg;o", data);
+    if (response.status === 200) {
+      alert("successfull");
+    }
+
+    //console.log("ugfriehgejrgttutrjrjo", response.data);
+    // dispatch(addEmployees(response));
     if (addEmployeeModalRef.current) {
       addEmployeeModalRef.current.checked =
         !addEmployeeModalRef.current.checked;
       console.log("Checkbox is checked:", addEmployeeModalRef.current.checked);
-    } else {
-      newEmployeeModalRef;
     }
+
+    alert(Response.messge);
   };
   const onEditSubmit = async (data: FormData) => {
     const response = await EMS_CLIENT.put(`edit-employee/${data._id}`, data);
@@ -335,10 +345,13 @@ const EmployeesPage = () => {
 
   useEffect(() => {
     fetchAllEmployees();
-    console.log(getFormKeys());
   }, []);
+  console.log("goswami mp", data, columns);
+  if (data.length === 0) {
+    return;
+  }
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data);
+  // const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data);
   return (
     <div className="w-screen h-screen">
       <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
@@ -396,30 +409,104 @@ const EmployeesPage = () => {
             ))} */}
           <form
             className="py-4 flex flex-col gap-4"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onAddSubmit)}
           >
-            <label>FirstName</label>
+            <label>firstName</label>
             <input {...register("firstName")} />
-            <label>LastName</label>
-            <input {...register("lastName")} />
-            <label>email</label>
-            <input {...register("Email")} />
+            {errors.firstName && <p>{errors.firstName.message}</p>}
+            <label>lastName</label>
+            <input
+              type="text"
+              {...register("lastName", {
+                required: true,
+                // pattern: /^[a-zA-Z]+$/,
+                // maxLength: 20,
+              })}
+            />
+            <span className="text-customRed1">{errors.lastName?.message}</span>
+
             <label>primaryContactNumber</label>
-            <input {...register("primaryContactNumber")} />
+            <input
+              {...register("primaryContactNumber", {
+                required: true,
+                // pattern: /^[0-9+-]+$/,
+                // minLength: 6,
+                // maxLength: 12,
+              })}
+            />
+            <span className="text-customRed1">
+              {errors.primararyContactNumber?.message}
+            </span>
             <label>secondaryContactNumber</label>
-            <input {...register("secondaryContactNumber")} />
+            <input
+              {...register("secondaryContactNumber", {
+                required: true,
+                // pattern: /^[0-9+-]+$/,
+                // minLength: 6,
+                // maxLength: 12,
+              })}
+            />
+            <span className="text-customRed1">
+              {errors.secondaryContactNumber?.message}
+            </span>
             <label>primaryAddress</label>
-            <input {...register("primaryAddress")} />
+            <input
+              {...register("primaryAddress", {
+                required: true,
+                // pattern: /^[a-zA-Z]+$/,
+                // maxLength: 100,
+              })}
+            />
+            <span className="text-customRed1">
+              {errors.primaryAddress?.message}
+            </span>
             <label>secondaryAddress</label>
-            <input {...register("secondaryAddress")} />
+            <input
+              {...register("secondaryAddress", {
+                required: true,
+                // pattern: /^[a-zA-Z]+$/,
+                // maxLength: 100,
+              })}
+            />
+            <span className="text-customRed1">
+              {errors.secondaryAddress?.message}
+            </span>
             <label>officialEmail</label>
-            <input {...register("officialEmail")} />
+            <input
+              {...register("officialEmail", {
+                required: true,
+                // pattern: /^\S+@\S+$/i,
+              })}
+            />
+            <span className="text-customRed1">
+              {errors.officialEmail?.message}
+            </span>
             <label>personalEmail</label>
-            <input {...register("personalEmail")} />
+            <input
+              {...register("personalEmail", {
+                required: true,
+                // pattern: /^\S+@\S+$/i,
+              })}
+            />
+            <span className="text-customRed1">
+              {errors.personalEmail?.message}
+            </span>
+            <label>DateOfBirth</label>
+            <input
+              {...register("dateOfBirth", { required: true })}
+              type="date"
+            />
+            <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span>
 
             <label>designation</label>
             <select
-              {...register("designation")}
+              {...register("designation", {
+                required: true,
+                // pattern: /^[a-zA-Z]+$/,
+                // maxLength: 10,
+              })}
               className="select select-bordered m-1"
             >
               <option value="">Select</option>
@@ -427,10 +514,17 @@ const EmployeesPage = () => {
               <option value="JUNIOR">JUNIOR</option>
               <option value="TRAINEE">TRAINEE</option>
             </select>
+            <span className="text-customRed1">
+              {errors.designation?.message}
+            </span>
 
             <label>department</label>
             <select
-              {...register("department")}
+              {...register("department", {
+                required: true,
+                // pattern: /^[a-zA-Z]+$/,
+                // maxLength: 20,
+              })}
               className="select select-bordered m-1"
             >
               <option value="">Select</option>
@@ -438,13 +532,39 @@ const EmployeesPage = () => {
               <option value="HR">HR</option>
               <option value="DEVELOPER">DEVELOPER</option>
             </select>
+            <span className="text-customRed1">
+              {errors.department?.message}
+            </span>
 
             <label>experience</label>
-            <input {...register("experience")} />
+            <input
+              {...register("experience", {
+                required: true,
+                pattern: /^[0-9+-]+$/,
+                // minLength: 6,
+                // maxLength: 12,
+              })}
+            />
+            <span className="text-customRed1">
+              {errors.experience?.message}
+            </span>
             <label>DateOfJoining</label>
-            <input {...register("dateOfJoining")} type="date" />
+            <input
+              {...register("dateOfJoining", { required: true })}
+              type="date"
+            />
+            <span className="text-customRed1">
+              {errors.dateOfJoining?.message}
+            </span>
             <label>role</label>
-            <input {...register("role")} />
+            <input
+              {...register("role", {
+                required: true,
+                // pattern: /^[a-zA-Z]+$/,
+                // maxLength: 20,
+              })}
+            />
+            <span className="text-customRed1">{errors.role?.message}</span>
 
             <button type="submit" className="btn">
               add
@@ -470,7 +590,7 @@ const EmployeesPage = () => {
             </span>
           </div>
           {/* EDIT EMPLOYEE FORM */}
-          <form
+          {/* <form
             className="py-4 flex flex-col gap-4"
             onSubmit={handleSubmit(onEditSubmit)}
           >
@@ -491,7 +611,7 @@ const EmployeesPage = () => {
             <button type="submit" className="btn">
               add
             </button>
-          </form>
+          </form> */}
         </div>
       </div>
 
