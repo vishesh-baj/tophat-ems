@@ -4,7 +4,7 @@ import { addrequest } from "../slices/app/HrSlice";
 import { useDispatch } from "react-redux";
 
 const HrEmployeePage: FC = () => {
-  const [alls, setAlls] = useState("");
+  const [alls, setAlls] = useState<any>("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const state = useRef("true");

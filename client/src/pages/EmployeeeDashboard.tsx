@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 
 const EmployeeeDashboard = () => {
-  const [login, setLogIn] = useState("");
-  const [logout, setLogOut] = useState("");
-  const [breakIn, setBreakIn] = useState("");
-  const [breakout, setBreakOut] = useState();
-  const [teaIn, setTeaIn] = useState("");
-  const [teaOut, setTeaOut] = useState("");
+  const [login, setLogIn] = useState<any>("");
+  const [logout, setLogOut] = useState<any>("");
+  const [breakIn, setBreakIn] = useState<any>("");
+  const [breakout, setBreakOut] = useState<any>();
+  const [teaIn, setTeaIn] = useState<any>("");
+  const [teaOut, setTeaOut] = useState<any>("");
   const handleIn = () => {
     const date = new Date();
-    const showTime =Number( date.toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: false,
-    }));
+    const showTime = Number(
+      date.toLocaleString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: false,
+      })
+    );
     setLogIn(showTime);
   };
   const handleOut = () => {
