@@ -7,8 +7,8 @@ import {
   ErrorPage,
   LandingPage,
   LoginPage,
-  RegisterPage,
-  ReportsPage,
+  // RegisterPage,
+  // ReportsPage,
 } from "../pages";
 import SuperAdminPage from "../pages/SuperAdminPage";
 
@@ -34,11 +34,11 @@ export const authRoutes: IRoute[] = [
     path: PATHS.candidates,
     Element: CandidatesPage,
   },
-  {
-    key: PATHS.reports,
-    path: PATHS.reports,
-    Element: ReportsPage,
-  },
+  // {
+  //   key: PATHS.reports,
+  //   path: PATHS.reports,
+  //   Element: ReportsPage,
+  // },
   {
     key: PATHS.error,
     path: PATHS.error,
@@ -58,10 +58,9 @@ export const routes = [
     path: PATHS.login,
     Element: LoginPage,
   },
-  {
-    key: PATHS.register,
-    path: PATHS.register,
-    Element: RegisterPage,
-  },
+  // {
+  //   key: PATHS.register,
+  //   path: PATHS.register,
+  //   Element: RegisterPage,
+  // },
 ];
-

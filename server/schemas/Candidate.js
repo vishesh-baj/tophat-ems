@@ -12,12 +12,12 @@ const CandidateSchema = new mongoose.Schema({
   personalEmail: {
     type: String,
     required: true,
-    unique: true,
+    // unique: true,
   },
   primaryContactNumber: {
     type: String,
     required: true,
-    unique: true,
+    //unique: true,
   },
   currentLocation: {
     type: String,
@@ -28,7 +28,8 @@ const CandidateSchema = new mongoose.Schema({
     required: true,
   },
   readyToRelocate: {
-    type: Boolean,
+    //type: Boolean,
+    type: String,
     required: true,
   },
   noticePeriod: {

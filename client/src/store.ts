@@ -5,8 +5,8 @@ import EmployeeReducer from "./slices/app/EmployeeSlice";
 import CandidatesReducer from "./slices/app/CandidateSlice";
 import UsersReducer from "./slices/app/UserSlice";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { employeesApi } from "./services/apiSlice";
-import { appSlice } from "./slices/app/appSlice";
+import hrReducer from "./slices/app/HrSlice";
+//import { employeesApi } from "./services/apiSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,11 +15,13 @@ export const store = configureStore({
     employees: EmployeeReducer,
     candidates: CandidatesReducer,
     counter: CounterReducer,
-    // appSlice,
+    hr: hrReducer,
+
     // [employeesApi.reducerPath]: employeesApi.reducer,
+    // },
+    // middleware: (getDefaultMiddleware) =>
+    //   getDefaultMiddleware().concat(employeesApi.middleware),
   },
-  // middleware: (getDefaultMiddleware) =>
-  //   getDefaultMiddleware().concat(employeesApi.middleware),
 });
 
 setupListeners(store.dispatch);

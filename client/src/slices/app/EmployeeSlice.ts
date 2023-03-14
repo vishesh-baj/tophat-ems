@@ -17,6 +17,7 @@ const employeeSlice = createSlice({
     },
   },
 });
+localStorage.getItem("token ");
 
 export const { addEmployees } = employeeSlice.actions;
 export default employeeSlice.reducer;

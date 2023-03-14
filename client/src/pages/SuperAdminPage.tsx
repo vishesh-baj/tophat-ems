@@ -2,10 +2,13 @@ import { FC, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
+import HrEmployeePage from "./HrEmployeePage";
 //import { usersColumns } from "../constants";
 import { addUsers, newUsers } from "../slices/app/UserSlice";
 
 import { useForm } from "react-hook-form";
+import EmployeeeDashboard from "./EmployeeeDashboard";
+import Allrequests from "./Allrequests";
 const SuperAdminPage = () => {
   const dispatch = useDispatch();
   const fetchAllEmployees = async () => {
@@ -13,11 +16,13 @@ const SuperAdminPage = () => {
     console.log("RESPONSE: ", response.data);
     dispatch(addUsers(response.data));
   };
+
   const data = useSelector((state: any) => state.users);
   console.log("DATA FETCHED FROM STORE: ", data);
 
   useEffect(() => {
     fetchAllEmployees();
+    console.log("hooooomjnjini");
   }, []);
 
   const { register, handleSubmit } = useForm({
@@ -36,7 +41,11 @@ const SuperAdminPage = () => {
   };
   return (
     <div>
+      <HrEmployeePage />
+
+      <Allrequests />
       <div>
+        {/* <div>
         <label htmlFor="my-modal-6" className="btn">
           Add User
         </label>
@@ -105,6 +114,7 @@ const SuperAdminPage = () => {
       <div className="w-screen h-screen">
         <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
         {/* <Table columns={usersColumns} data={data} /> */}
+        {/* </div> */}
       </div>
     </div>
   );

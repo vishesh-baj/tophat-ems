@@ -1,7 +1,8 @@
 import { createColumnHelper } from "@tanstack/react-table";
+import React from "react";
 import { startCase } from "lodash";
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import EMS_CLIENT from "../api";
 import { Table } from "../components";
@@ -13,6 +14,23 @@ import { Close } from "../assets";
 
 const columnHelper = createColumnHelper<ICandidates>();
 
+type FormValues = {
+  firstName: string;
+  lastName: string;
+  personalEmail: string;
+  primararyContactNumber: string;
+  currentLocation: string;
+  baseLocation: string;
+  readyToRelocate: string;
+  noticePeriod: string;
+  currentCTC: string;
+  expectedCTC: string;
+  communication: string;
+  technology: string;
+  experience: string;
+  hrInCharge: string;
+  status: string;
+};
 const CandidatesPage = () => {
   // TODO: fetch associatedHrId from token and pass instead of static string value
 
@@ -58,7 +76,7 @@ const CandidatesPage = () => {
       cell: (info) => info.getValue(),
       header: "Expected CTC",
     }),
-    columnHelper.accessor("communation", {
+    columnHelper.accessor("communication", {
       cell: (info) => info.getValue(),
       header: "Communication",
     }),
@@ -103,43 +121,46 @@ const CandidatesPage = () => {
       ),
     }),
   ];
+  function refreshPage() {
+    window.location.reload(false);
+  }
 
   const schema = yup.object({
     _id: yup.string(),
     firstName: yup.string().required("first name is required"),
-    lastName: yup.string().required("last name is required"),
-    primaryContactNumber: yup
-      .string()
-      .required("contact number is required")
-      .min(10, "enter valid contact number"),
-    secondaryContactNumber: yup
-      .string()
-      .required("secondary contact is required")
-      .min(10, "enter valid contact number"),
-    primaryAddress: yup
-      .string()
-      .required("primary address is required")
-      .max(250, "cannot exceed 250 characters"),
-    secondaryAddress: yup
-      .string()
-      .required("secondary address is required")
-      .max(250, "cannot exceed 250 characters"),
-    officialEmail: yup
-      .string()
-      .email("enter valid email")
-      .required("email is required"),
-    personalEmail: yup
-      .string()
-      .email("enter valid email")
-      .required("personal email is required"),
-    dateOfBirth: yup.string().required("date of birth is required"),
-    designation: yup.string().required("designation is required"),
-    department: yup.string().required("department is required"),
-    experience: yup.string().required("experience is required"),
-    dateOfJoining: yup.string().required("date of joining is required"),
-    role: yup.string().required("role is required"),
-    permissions: yup.string().required("permissions are required"),
-    associatedUserId: yup.string(),
+    //   lastName: yup.string().required("last name is required"),
+    //   primaryContactNumber: yup
+    //     .string()
+    //     .required("contact number is required")
+    //     .min(10, "enter valid contact number"),
+    //   secondaryContactNumber: yup
+    //     .string()
+    //     .required("secondary contact is required")
+    //     .min(10, "enter valid contact number"),
+    //   primaryAddress: yup
+    //     .string()
+    //     .required("primary address is required")
+    //     .max(250, "cannot exceed 250 characters"),
+    //   secondaryAddress: yup
+    //     .string()
+    //     .required("secondary address is required")
+    //     .max(250, "cannot exceed 250 characters"),
+    //   officialEmail: yup
+    //     .string()
+    //     .email("enter valid email")
+    //     .required("email is required"),
+    //   personalEmail: yup
+    //     .string()
+    //     .email("enter valid email")
+    //     .required("personal email is required"),
+    //   dateOfBirth: yup.string().required("date of birth is required"),
+    //   designation: yup.string().required("designation is required"),
+    //   department: yup.string().required("department is required"),
+    //   experience: yup.string().required("experience is required"),
+    //   dateOfJoining: yup.string().required("date of joining is required"),
+    //   role: yup.string().required("role is required"),
+    //   permissions: yup.string().required("permissions are required"),
+    //   associatedUserId: yup.string(),
   });
 
   type FormData = yup.InferType<typeof schema>;
@@ -184,7 +205,7 @@ const CandidatesPage = () => {
     resolver: yupResolver(schema),
   });
 
-  const onAddSubmit = async (data: FormData) => {
+  const onAddSubmit: SubmitHandler<FormValues> = async (data) => {
     const response = await EMS_CLIENT.post("add-candidate", data);
     alert(response.data);
     if (addCandidateModalRef.current) {
@@ -192,23 +213,28 @@ const CandidatesPage = () => {
         !addCandidateModalRef.current.checked;
       console.log("Checkbox is checked:", addCandidateModalRef.current.checked);
     }
+    refreshPage();
+    console.log("manish", data);
   };
   const onEditSubmit = async (data: FormData) => {
     const response = await EMS_CLIENT.put(`edit-candidate/${data._id}`, data);
     console.log(response.data);
     handleClose(editCandidateModalRef);
+    refreshPage();
   };
   const onDeleteSubmit = async () => {
     const response = await EMS_CLIENT.delete(`delete-candidate/${idToDelete}`);
     handleClose(deleteCandidateModalRef);
     console.log(response.data);
+    refreshPage();
   };
 
   useEffect(() => {
-    console.log("dataaa");
-    console.log(() => getFormKeys());
+    // console.log("dataaa");
+    // console.log(() => getFormKeys());
     fetchAllEmployees();
   }, []);
+  // const onSubmits: SubmitHandler<FormValues> = (data) => console.log(data);
 
   return (
     <div className="w-screen h-screen">
@@ -248,7 +274,7 @@ const CandidatesPage = () => {
             className="py-4 flex flex-col gap-4"
             onSubmit={handleSubmit(onAddSubmit)}
           >
-            {getFormKeys().map((formInput) => (
+            {/* {getFormKeys().map((formInput) => (
               <div key={formInput} className="form-control">
                 <input
                   {...register(formInput)}
@@ -261,9 +287,116 @@ const CandidatesPage = () => {
                   {errors[formInput]?.message}
                 </p>
               </div>
-            ))}
+            ))} */}
+            <label>firstName</label>
+            <input {...register("firstName")} />
+            {/* {errors.firstName && <p>{errors.firstName.message}</p>} */}
+            <label>lastName</label>
+            <input
+              type="text"
+              {...register("lastName", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">{errors.lastName?.message}</span> */}
+
+            <label>personalEmail</label>
+            <input
+              {...register("personalEmail", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.personalEmail?.message}
+            </span> */}
+            <label>primaryContactNumber</label>
+            <input
+              {...register("primaryContactNumber", {
+                required: true,
+              })}
+            />
+            <label>secondaryContactNumber</label>
+            <input
+              {...register("secondaryContactNumber", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.secondaryContactNumber?.message}
+            </span> */}
+
+            {/* <span className="text-customRed1">
+              {errors.primaryAddress?.message}
+            </span> */}
+            <label>currentLocation</label>
+            <input
+              {...register("currentLocation", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.secondaryAddress?.message}
+            </span> */}
+            <label>baseLocation</label>
+            <input
+              {...register("baseLocation", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.officialEmail?.message}
+            </span> */}
+            <label>readyToRelocate</label>
+            <input
+              {...register("readyToRelocate", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.personalEmail?.message}
+            </span> */}
+            <label>noticePeriod</label>
+            <input {...register("noticePeriod", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>currentCTC</label>
+            <input {...register("currentCTC", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>expectedCTC</label>
+            <input {...register("expectedCTC", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label> communication</label>
+            <input {...register("communication", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>technology</label>
+            <input {...register("technology", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>experience</label>
+            <input {...register("experience", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>hrInCharge</label>
+            <input {...register("hrInCharge", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.hrIn
+                Charge?.message}
+            </span> */}
+            <label>status</label>
+            <input {...register("status", { required: true })} />
+            {/* <span className="text-customRed1">{errors.status?.message}</span> */}
+
             <button type="submit" className="btn">
-              add
+              Add
             </button>
           </form>
         </div>
@@ -290,7 +423,7 @@ const CandidatesPage = () => {
             className="py-4 flex flex-col gap-4"
             onSubmit={handleSubmit(onEditSubmit)}
           >
-            {getFormKeys().map((formInput) => (
+            {/* {getFormKeys().map((formInput) => (
               <div key={formInput} className="form-control">
                 <input
                   {...register(formInput)}
@@ -303,9 +436,116 @@ const CandidatesPage = () => {
                   {errors[formInput]?.message}
                 </p>
               </div>
-            ))}
+            ))} */}
+            <label>firstName</label>
+            <input {...register("firstName")} />
+            {/* {errors.firstName && <p>{errors.firstName.message}</p>} */}
+            <label>lastName</label>
+            <input
+              type="text"
+              {...register("lastName", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">{errors.lastName?.message}</span> */}
+
+            <label>personalEmail</label>
+            <input
+              {...register("personalEmail", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.personalEmail?.message}
+            </span> */}
+            <label>primaryContactNumber</label>
+            <input
+              {...register("primaryContactNumber", {
+                required: true,
+              })}
+            />
+            <label>secondaryContactNumber</label>
+            <input
+              {...register("secondaryContactNumber", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.secondaryContactNumber?.message}
+            </span> */}
+
+            {/* <span className="text-customRed1">
+              {errors.primaryAddress?.message}
+            </span> */}
+            <label>currentLocation</label>
+            <input
+              {...register("currentLocation", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.secondaryAddress?.message}
+            </span> */}
+            <label>baseLocation</label>
+            <input
+              {...register("baseLocation", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.officialEmail?.message}
+            </span> */}
+            <label>readyToRelocate</label>
+            <input
+              {...register("readyToRelocate", {
+                required: true,
+              })}
+            />
+            {/* <span className="text-customRed1">
+              {errors.personalEmail?.message}
+            </span> */}
+            <label>noticePeriod</label>
+            <input {...register("noticePeriod", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>currentCTC</label>
+            <input {...register("currentCTC", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>expectedCTC</label>
+            <input {...register("expectedCTC", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label> communication</label>
+            <input {...register("communication", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>technology</label>
+            <input {...register("technology", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>experience</label>
+            <input {...register("experience", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.dateOfBirth?.message}
+            </span> */}
+            <label>hrInCharge</label>
+            <input {...register("hrInCharge", { required: true })} />
+            {/* <span className="text-customRed1">
+              {errors.hrIn
+                Charge?.message}
+            </span> */}
+            <label>status</label>
+            <input {...register("status", { required: true })} />
+            {/* <span className="text-customRed1">{errors.status?.message}</span> */}
+
             <button type="submit" className="btn">
-              add
+              Edit
             </button>
           </form>
         </div>

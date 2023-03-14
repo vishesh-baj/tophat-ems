@@ -18,6 +18,7 @@ type TableProps = {
 const Table = ({ tableRows, tableColumns }: TableProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = React.useState("");
+
   const data = tableRows;
   const columns = tableColumns;
   const table = useReactTable({
@@ -27,22 +28,31 @@ const Table = ({ tableRows, tableColumns }: TableProps) => {
       sorting,
       globalFilter,
     },
-    onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
+    globalFilterFn: "includesString",
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const globalFilterHandler = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setGlobalFilter(event.target.value);
+  };
+
   return (
     <>
-      <input
-        value={globalFilter ?? ""}
-        onChange={(event) => setGlobalFilter(event.target.value)}
-        className="input input-primary mb-4 outline-none w-1/4"
-        placeholder="Search all columns..."
-      />
+      <div>
+        <input
+          value={globalFilter ?? ""}
+          onChange={globalFilterHandler}
+          className="p-2 font-lg shadow border border-block"
+          placeholder="Search all columns..."
+        />
+      </div>
       <table className="table table-zebra w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (

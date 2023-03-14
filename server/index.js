@@ -8,7 +8,10 @@ const userRoute = require("./routes/user");
 const employeeRoute = require("./routes/employee");
 const candidateRoute = require("./routes/candidate");
 const attendanceRoute = require("./routes/attendance");
+const allattendenceRoute = require("./routes/attendance");
 // Connect to MongoDB
+mongoose.set("strictQuery", false);
+
 mongoose
   .connect(process.env.DB_URL)
   .then(() => console.log("DB CONNECTED"))

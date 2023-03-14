@@ -1,4 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
+import React from "react";
 import { startCase } from "lodash";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -10,8 +11,9 @@ import { addEmployees } from "../slices/app/EmployeeSlice";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { Close } from "../assets";
+import axios from "axios";
 
-// import { useGetAllProductsQuery } from "../services/apiSlice";
+//import { useGetAllProductsQuery } from "../services/apiSlice";
 
 const columnHelper = createColumnHelper<IEmployees>();
 
@@ -30,17 +32,9 @@ type FormValues = {
   dateOfJoining: string;
   experience: string;
 };
+
 const EmployeesPage = () => {
-  // const { data = [], error, isLoading } = useGetAllProductsQuery([]);
-
-  // useEffect(() => {
-  //   console.log(`isLaoding -> ${isLoading}`);
-  // }, [isLoading, data]);
-
-  // console.log("DATA FETCHED FROM QUERY:", data ? data : []);
-  // console.log("Error FETCHED FROM QUERY:", error ? error : []);
-
-  useEffect(() => {}, []);
+  const [time, setTime] = React.useState("");
 
   const columns = [
     columnHelper.accessor("firstName", {
@@ -186,7 +180,7 @@ const EmployeesPage = () => {
 
   type FormData = yup.InferType<typeof schema>;
   const dispatch = useDispatch();
-  const newEmployeeModalRef = useRef<HTMLInputElement>(null);
+
   const addEmployeeModalRef = useRef<HTMLInputElement>(null);
   const editEmployeeModalRef = useRef<HTMLInputElement>(null);
   const deleteEmployeeModalRef = useRef<HTMLInputElement>(null);
@@ -330,12 +324,13 @@ const EmployeesPage = () => {
       console.log("Checkbox is checked:", addEmployeeModalRef.current.checked);
     }
 
-    alert(Response.messge);
+    fetchAllEmployees();
   };
   const onEditSubmit = async (data: FormData) => {
     const response = await EMS_CLIENT.put(`edit-employee/${data._id}`, data);
     console.log(response.data);
     handleClose(editEmployeeModalRef);
+    refreshPage();
   };
   const onDeleteSubmit = async () => {
     const response = await EMS_CLIENT.delete(`delete-employee/${idToDelete}`);
@@ -346,54 +341,63 @@ const EmployeesPage = () => {
   useEffect(() => {
     fetchAllEmployees();
   }, []);
+
+  const date = new Date();
+  const showTime = date.toLocaleString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour24: true,
+  });
+  console.log(showTime);
+
   console.log("goswami mp", data, columns);
   if (data.length === 0) {
-    return;
+    return <h1>hi</h1>;
   }
 
-  // const onSubmit: SubmitHandler<FormValues> = (data) => console.log(data);
   return (
-    <div className="w-screen h-screen">
-      <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
-      <div className="flex justify-end py-4 mx-14">
-        {/* TODO: ADD SEARCH INPUT */}
+    <div>
+      <div className="w-screen h-screen">
+        <h1 className="text-center py-5 text-3xl">Employee Dashboard</h1>
+        <div className="flex justify-end py-4 mx-14">
+          {/* TODO: ADD SEARCH INPUT */}
 
-        <button
-          onClick={() => handleClose(addEmployeeModalRef)}
-          className="btn btn-info"
-        >
-          Add Employee
-        </button>
-      </div>
-      <div className="overflow-x-auto mx-14">
-        <Table tableColumns={columns} tableRows={data} />
-      </div>
+          <button
+            onClick={() => handleClose(addEmployeeModalRef)}
+            className="btn btn-info"
+          >
+            Add Employee
+          </button>
+        </div>
+        <div className="overflow-x-auto mx-14">
+          <Table tableColumns={columns} tableRows={data} />
+        </div>
 
-      {/* ______________________________________________MODALS */}
-      {/* add employee modal trigger */}
-      <input
-        ref={addEmployeeModalRef}
-        type="checkbox"
-        id="employee-modal_add"
-        className="modal-toggle"
-      />
+        {/* ______________________________________________MODALS */}
+        {/* add employee modal trigger */}
+        <input
+          ref={addEmployeeModalRef}
+          type="checkbox"
+          id="employee-modal_add"
+          className="modal-toggle"
+        />
 
-      {/* add employee modal */}
-      <div className="modal">
-        <div className="modal-box">
-          <div className="flex w-full justify-between">
-            <h3 className="font-bold text-2xl ">Add Employee</h3>
-            <span onClick={() => handleClose(addEmployeeModalRef)}>
-              <Close className="h-6 w-6 cursor-pointer text-base-content" />
-            </span>
-          </div>
-          {/* ADD EMPLOYEE FORM */}
+        {/* add employee modal */}
+        <div className="modal">
+          <div className="modal-box">
+            <div className="flex w-full justify-between">
+              <h3 className="font-bold text-2xl ">Add Employee</h3>
+              <span onClick={() => handleClose(addEmployeeModalRef)}>
+                <Close className="h-6 w-6 cursor-pointer text-base-content" />
+              </span>
+            </div>
+            {/* ADD EMPLOYEE FORM */}
 
-          {/* <form
+            {/* <form
             className="py-4 flex flex-col gap-4"
             onSubmit={handleSubmit(onSubmit)}
           > */}
-          {/* {getFormKeys().map((formInput) => (
+            {/* {getFormKeys().map((formInput) => (
               <div key={formInput} className="form-control">
                 <input
                   {...register(formInput)}
@@ -407,194 +411,308 @@ const EmployeesPage = () => {
                 </p>
               </div>
             ))} */}
-          <form
-            className="py-4 flex flex-col gap-4"
-            onSubmit={handleSubmit(onAddSubmit)}
-          >
-            <label>firstName</label>
-            <input {...register("firstName")} />
-            {errors.firstName && <p>{errors.firstName.message}</p>}
-            <label>lastName</label>
-            <input
-              type="text"
-              {...register("lastName", {
-                required: true,
-                // pattern: /^[a-zA-Z]+$/,
-                // maxLength: 20,
-              })}
-            />
-            <span className="text-customRed1">{errors.lastName?.message}</span>
-
-            <label>primaryContactNumber</label>
-            <input
-              {...register("primaryContactNumber", {
-                required: true,
-                // pattern: /^[0-9+-]+$/,
-                // minLength: 6,
-                // maxLength: 12,
-              })}
-            />
-            <span className="text-customRed1">
-              {errors.primararyContactNumber?.message}
-            </span>
-            <label>secondaryContactNumber</label>
-            <input
-              {...register("secondaryContactNumber", {
-                required: true,
-                // pattern: /^[0-9+-]+$/,
-                // minLength: 6,
-                // maxLength: 12,
-              })}
-            />
-            <span className="text-customRed1">
-              {errors.secondaryContactNumber?.message}
-            </span>
-            <label>primaryAddress</label>
-            <input
-              {...register("primaryAddress", {
-                required: true,
-                // pattern: /^[a-zA-Z]+$/,
-                // maxLength: 100,
-              })}
-            />
-            <span className="text-customRed1">
-              {errors.primaryAddress?.message}
-            </span>
-            <label>secondaryAddress</label>
-            <input
-              {...register("secondaryAddress", {
-                required: true,
-                // pattern: /^[a-zA-Z]+$/,
-                // maxLength: 100,
-              })}
-            />
-            <span className="text-customRed1">
-              {errors.secondaryAddress?.message}
-            </span>
-            <label>officialEmail</label>
-            <input
-              {...register("officialEmail", {
-                required: true,
-                // pattern: /^\S+@\S+$/i,
-              })}
-            />
-            <span className="text-customRed1">
-              {errors.officialEmail?.message}
-            </span>
-            <label>personalEmail</label>
-            <input
-              {...register("personalEmail", {
-                required: true,
-                // pattern: /^\S+@\S+$/i,
-              })}
-            />
-            <span className="text-customRed1">
-              {errors.personalEmail?.message}
-            </span>
-            <label>DateOfBirth</label>
-            <input
-              {...register("dateOfBirth", { required: true })}
-              type="date"
-            />
-            <span className="text-customRed1">
-              {errors.dateOfBirth?.message}
-            </span>
-
-            <label>designation</label>
-            <select
-              {...register("designation", {
-                required: true,
-                // pattern: /^[a-zA-Z]+$/,
-                // maxLength: 10,
-              })}
-              className="select select-bordered m-1"
+            <form
+              className="py-4 flex flex-col gap-4"
+              onSubmit={handleSubmit(onAddSubmit)}
             >
-              <option value="">Select</option>
-              <option value="SENIOR">SENIOR</option>
-              <option value="JUNIOR">JUNIOR</option>
-              <option value="TRAINEE">TRAINEE</option>
-            </select>
-            <span className="text-customRed1">
-              {errors.designation?.message}
-            </span>
+              <label>firstName</label>
+              <input {...register("firstName")} />
+              {errors.firstName && <p>{errors.firstName.message}</p>}
+              <label>lastName</label>
+              <input
+                type="text"
+                {...register("lastName", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.lastName?.message}
+              </span>
 
-            <label>department</label>
-            <select
-              {...register("department", {
-                required: true,
-                // pattern: /^[a-zA-Z]+$/,
-                // maxLength: 20,
-              })}
-              className="select select-bordered m-1"
-            >
-              <option value="">Select</option>
-              <option value="BDE">BDE</option>
-              <option value="HR">HR</option>
-              <option value="DEVELOPER">DEVELOPER</option>
-            </select>
-            <span className="text-customRed1">
-              {errors.department?.message}
-            </span>
+              <label>primaryContactNumber</label>
+              <input
+                {...register("primaryContactNumber", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.primararyContactNumber?.message}
+              </span>
+              <label>secondaryContactNumber</label>
+              <input
+                {...register("secondaryContactNumber", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.secondaryContactNumber?.message}
+              </span>
+              <label>primaryAddress</label>
+              <input
+                {...register("primaryAddress", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.primaryAddress?.message}
+              </span>
+              <label>secondaryAddress</label>
+              <input
+                {...register("secondaryAddress", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.secondaryAddress?.message}
+              </span>
+              <label>officialEmail</label>
+              <input
+                {...register("officialEmail", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.officialEmail?.message}
+              </span>
+              <label>personalEmail</label>
+              <input
+                {...register("personalEmail", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.personalEmail?.message}
+              </span>
+              <label>DateOfBirth</label>
+              <input
+                {...register("dateOfBirth", { required: true })}
+                type="date"
+              />
+              <span className="text-customRed1">
+                {errors.dateOfBirth?.message}
+              </span>
 
-            <label>experience</label>
-            <input
-              {...register("experience", {
-                required: true,
-                pattern: /^[0-9+-]+$/,
-                // minLength: 6,
-                // maxLength: 12,
-              })}
-            />
-            <span className="text-customRed1">
-              {errors.experience?.message}
-            </span>
-            <label>DateOfJoining</label>
-            <input
-              {...register("dateOfJoining", { required: true })}
-              type="date"
-            />
-            <span className="text-customRed1">
-              {errors.dateOfJoining?.message}
-            </span>
-            <label>role</label>
-            <input
-              {...register("role", {
-                required: true,
-                // pattern: /^[a-zA-Z]+$/,
-                // maxLength: 20,
-              })}
-            />
-            <span className="text-customRed1">{errors.role?.message}</span>
+              <label>designation</label>
+              <select
+                {...register("designation", {
+                  required: true,
+                })}
+                className="select select-bordered m-1"
+              >
+                <option value="">Select</option>
+                <option value="SENIOR">SENIOR</option>
+                <option value="JUNIOR">JUNIOR</option>
+                <option value="TRAINEE">TRAINEE</option>
+              </select>
+              <span className="text-customRed1">
+                {errors.designation?.message}
+              </span>
 
-            <button type="submit" className="btn">
-              add
-            </button>
-          </form>
-        </div>
-      </div>
+              <label>department</label>
+              <select
+                {...register("department", {
+                  required: true,
+                })}
+                className="select select-bordered m-1"
+              >
+                <option value="">Select</option>
+                <option value="BDE">BDE</option>
+                <option value="HR">HR</option>
+                <option value="DEVELOPER">DEVELOPER</option>
+              </select>
+              <span className="text-customRed1">
+                {errors.department?.message}
+              </span>
 
-      {/* edit employee modal trigger */}
-      <input
-        ref={editEmployeeModalRef}
-        type="checkbox"
-        id="employee-modal_edit"
-        className="modal-toggle"
-      />
-      {/* edit employee modal */}
-      <div className="modal">
-        <div className="modal-box">
-          <div className="flex w-full justify-between">
-            <h3 className="font-bold text-2xl ">Edit Employee</h3>
-            <span onClick={() => handleClose(editEmployeeModalRef)}>
-              <Close className="h-6 w-6 cursor-pointer text-base-content" />
-            </span>
+              <label>experience</label>
+              <input
+                {...register("experience", {
+                  required: true,
+                  pattern: /^[0-9+-]+$/,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.experience?.message}
+              </span>
+              <label>DateOfJoining</label>
+              <input
+                {...register("dateOfJoining", { required: true })}
+                type="date"
+              />
+              <span className="text-customRed1">
+                {errors.dateOfJoining?.message}
+              </span>
+              <label>role</label>
+              <input
+                {...register("role", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">{errors.role?.message}</span>
+
+              <button type="submit" className="btn">
+                add
+              </button>
+            </form>
           </div>
-          {/* EDIT EMPLOYEE FORM */}
-          {/* <form
-            className="py-4 flex flex-col gap-4"
-            onSubmit={handleSubmit(onEditSubmit)}
-          >
-            {getFormKeys().map((formInput) => (
+        </div>
+
+        {/* edit employee modal trigger */}
+        <input
+          ref={editEmployeeModalRef}
+          type="checkbox"
+          id="employee-modal_edit"
+          className="modal-toggle"
+        />
+        {/* edit employee modal */}
+        <div className="modal">
+          <div className="modal-box">
+            <div className="flex w-full justify-between">
+              <h3 className="font-bold text-2xl ">Edit Employee</h3>
+              <span onClick={() => handleClose(editEmployeeModalRef)}>
+                <Close className="h-6 w-6 cursor-pointer text-base-content" />
+              </span>
+            </div>
+            {/* EDIT EMPLOYEE FORM */}
+            <form
+              className="py-4 flex flex-col gap-4"
+              onSubmit={handleSubmit(onEditSubmit)}
+            >
+              <label>firstName</label>
+              <input {...register("firstName")} />
+              {errors.firstName && <p>{errors.firstName.message}</p>}
+              <label>lastName</label>
+              <input
+                type="text"
+                {...register("lastName", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.lastName?.message}
+              </span>
+
+              <label>primaryContactNumber</label>
+              <input
+                {...register("primaryContactNumber", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.primararyContactNumber?.message}
+              </span>
+              <label>secondaryContactNumber</label>
+              <input
+                {...register("secondaryContactNumber", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.secondaryContactNumber?.message}
+              </span>
+              <label>primaryAddress</label>
+              <input
+                {...register("primaryAddress", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.primaryAddress?.message}
+              </span>
+              <label>secondaryAddress</label>
+              <input
+                {...register("secondaryAddress", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.secondaryAddress?.message}
+              </span>
+              <label>officialEmail</label>
+              <input
+                {...register("officialEmail", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.officialEmail?.message}
+              </span>
+              <label>personalEmail</label>
+              <input
+                {...register("personalEmail", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.personalEmail?.message}
+              </span>
+              <label>DateOfBirth</label>
+              <input
+                {...register("dateOfBirth", { required: true })}
+                type="date"
+              />
+              <span className="text-customRed1">
+                {errors.dateOfBirth?.message}
+              </span>
+
+              <label>designation</label>
+              <select
+                {...register("designation", {
+                  required: true,
+                })}
+                className="select select-bordered m-1"
+              >
+                <option value="">Select</option>
+                <option value="SENIOR">SENIOR</option>
+                <option value="JUNIOR">JUNIOR</option>
+                <option value="TRAINEE">TRAINEE</option>
+              </select>
+              <span className="text-customRed1">
+                {errors.designation?.message}
+              </span>
+
+              <label>department</label>
+              <select
+                {...register("department", {
+                  required: true,
+                })}
+                className="select select-bordered m-1"
+              >
+                <option value="">Select</option>
+                <option value="BDE">BDE</option>
+                <option value="HR">HR</option>
+                <option value="DEVELOPER">DEVELOPER</option>
+              </select>
+              <span className="text-customRed1">
+                {errors.department?.message}
+              </span>
+
+              <label>experience</label>
+              <input
+                {...register("experience", {
+                  required: true,
+                  pattern: /^[0-9+-]+$/,
+                })}
+              />
+              <span className="text-customRed1">
+                {errors.experience?.message}
+              </span>
+              <label>DateOfJoining</label>
+              <input
+                {...register("dateOfJoining", { required: true })}
+                type="date"
+              />
+              <span className="text-customRed1">
+                {errors.dateOfJoining?.message}
+              </span>
+              <label>role</label>
+              <input
+                {...register("role", {
+                  required: true,
+                })}
+              />
+              <span className="text-customRed1">{errors.role?.message}</span>
+              {/* {getFormKeys().map((formInput) => (
               <div key={formInput} className="form-control">
                 <input
                   {...register(formInput)}
@@ -607,122 +725,123 @@ const EmployeesPage = () => {
                   {errors[formInput]?.message}
                 </p>
               </div>
-            ))}
-            <button type="submit" className="btn">
-              add
-            </button>
-          </form> */}
-        </div>
-      </div>
-
-      {/* delete employee modal trigger */}
-      <input
-        ref={deleteEmployeeModalRef}
-        type="checkbox"
-        id="employee-modal_delete"
-        className="modal-toggle"
-      />
-
-      {/* delete employee modal */}
-      <div className="modal">
-        <div className="modal-box">
-          <div className="flex w-full justify-between">
-            <h3 className="font-bold text-2xl ">Delete Employee</h3>
-            <span onClick={() => handleClose(deleteEmployeeModalRef)}>
-              <Close className="h-6 w-6 cursor-pointer text-base-content" />
-            </span>
+            ))} */}
+              <button type="submit" className="btn">
+                Update
+              </button>
+            </form>
           </div>
-          {/* DELETE EMPLOYEE Button */}
-          <div className="flex flex-1 flex-col justify-center gap-5">
-            <h2 className="">
-              Are you sure you want to delete the selected entry?
-            </h2>
-            <div className="flex w-full flex-col justify-center gap-4 ">
-              <button
-                onClick={onDeleteSubmit}
-                className="btn btn-outline btn-error"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => handleClose(deleteEmployeeModalRef)}
-                className="btn btn-outline btn-success"
-              >
-                Cancel
-              </button>
+        </div>
+
+        {/* delete employee modal trigger */}
+        <input
+          ref={deleteEmployeeModalRef}
+          type="checkbox"
+          id="employee-modal_delete"
+          className="modal-toggle"
+        />
+
+        {/* delete employee modal */}
+        <div className="modal">
+          <div className="modal-box">
+            <div className="flex w-full justify-between">
+              <h3 className="font-bold text-2xl ">Delete Employee</h3>
+              <span onClick={() => handleClose(deleteEmployeeModalRef)}>
+                <Close className="h-6 w-6 cursor-pointer text-base-content" />
+              </span>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* attendance modal trigger */}
-      <input
-        ref={attendanceEmployeeModalRef}
-        type="checkbox"
-        id="employee-modal_attendance"
-        className="modal-toggle"
-      />
-      <div className="modal">
-        <div className="modal-box">
-          <div className="flex w-full justify-between">
-            <h3 className="font-bold text-2xl ">Mark Attendance</h3>
-            <span onClick={() => handleClose(attendanceEmployeeModalRef)}>
-              <Close className="h-6 w-6 cursor-pointer text-base-content" />
-            </span>
-          </div>
-          {/* DELETE EMPLOYEE Button */}
-          <div className="flex flex-1 flex-col justify-center gap-5">
-            <h2 className="">Mark attendance of </h2>
-
-            <form
-              className="flex flex-col gap-4"
-              onSubmit={(e) => handleAttendanceSubmit(e)}
-            >
-              <div className="form-control">
-                <input
-                  onChange={(e) => handleAttendanceChange(e)}
-                  className="input input-primary"
-                  type="date"
-                  name="date"
-                />
-              </div>
-
-              <div className="form-control">
-                <select
-                  onChange={(e) => handleAttendanceChange(e)}
-                  className="select select-primary"
-                  name="status"
-                  id="status"
-                >
-                  <option value="select attendance status" defaultChecked>
-                    Select Attendance Status
-                  </option>
-                  <option value="present">Present</option>
-                  <option value="abscent">Abscent</option>
-                  <option value="halfDay">Half Day</option>
-                </select>
-              </div>
-              <div className="form-control">
-                <textarea
-                  onChange={(e) => handleAttendanceChange(e)}
-                  className="textarea textarea-bordered"
-                  name="notes"
-                  id="notes"
-                  placeholder="Enter note if any"
-                ></textarea>
-              </div>
+            {/* DELETE EMPLOYEE Button */}
+            <div className="flex flex-1 flex-col justify-center gap-5">
+              <h2 className="">
+                Are you sure you want to delete the selected entry?
+              </h2>
               <div className="flex w-full flex-col justify-center gap-4 ">
-                <button type="submit" className="btn btn-outline btn-warning">
-                  Mark Attendance
+                <button
+                  onClick={onDeleteSubmit}
+                  className="btn btn-outline btn-error"
+                >
+                  Delete
                 </button>
                 <button
-                  onClick={() => handleClose(attendanceEmployeeModalRef)}
+                  onClick={() => handleClose(deleteEmployeeModalRef)}
                   className="btn btn-outline btn-success"
                 >
                   Cancel
                 </button>
               </div>
-            </form>
+            </div>
+          </div>
+        </div>
+
+        {/* attendance modal trigger */}
+        <input
+          ref={attendanceEmployeeModalRef}
+          type="checkbox"
+          id="employee-modal_attendance"
+          className="modal-toggle"
+        />
+        <div className="modal">
+          <div className="modal-box">
+            <div className="flex w-full justify-between">
+              <h3 className="font-bold text-2xl ">Mark Attendance</h3>
+              <span onClick={() => handleClose(attendanceEmployeeModalRef)}>
+                <Close className="h-6 w-6 cursor-pointer text-base-content" />
+              </span>
+            </div>
+            {/* DELETE EMPLOYEE Button */}
+            <div className="flex flex-1 flex-col justify-center gap-5">
+              <h2 className="">Mark attendance of </h2>
+
+              <form
+                className="flex flex-col gap-4"
+                onSubmit={(e) => handleAttendanceSubmit(e)}
+              >
+                <div className="form-control">
+                  <input
+                    onChange={(e) => handleAttendanceChange(e)}
+                    className="input input-primary"
+                    type="date"
+                    name="date"
+                  />
+                </div>
+
+                <div className="form-control">
+                  <select
+                    onChange={(e) => handleAttendanceChange(e)}
+                    className="select select-primary"
+                    name="status"
+                    id="status"
+                  >
+                    <option value="select attendance status" defaultChecked>
+                      Select Attendance Status
+                    </option>
+                    <option value="present">Present</option>
+                    <option value="abscent">Abscent</option>
+                    <option value="halfDay">Half Day</option>
+                  </select>
+                </div>
+                <div className="form-control">
+                  <textarea
+                    onChange={(e) => handleAttendanceChange(e)}
+                    className="textarea textarea-bordered"
+                    name="notes"
+                    id="notes"
+                    placeholder="Enter note if any"
+                  ></textarea>
+                </div>
+                <div className="flex w-full flex-col justify-center gap-4 ">
+                  <button type="submit" className="btn btn-outline btn-warning">
+                    Mark Attendance
+                  </button>
+                  <button
+                    onClick={() => handleClose(attendanceEmployeeModalRef)}
+                    className="btn btn-outline btn-success"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

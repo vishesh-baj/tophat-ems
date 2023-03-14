@@ -23,9 +23,21 @@ const markAttendance = async (req, res) => {
     res.status(400).json({ message: "error occured", error: error.message });
   }
 };
+const getAllAttendance = async (req, res) => {
+  try {
+    const allAttendenceList = await Attendance.find();
+    res.status(200).json({
+      message: "all attendence fetch successfully",
+      allAttendenceList,
+    });
+  } catch (error) {
+    res.status(400).json({ message: "error occured", error });
+  }
+};
 
 module.exports = {
   attendanceController: {
     markAttendance,
+    getAllAttendance,
   },
 };

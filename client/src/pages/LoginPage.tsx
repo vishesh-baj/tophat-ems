@@ -8,7 +8,7 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { PATHS } from "../router/paths";
 import axios from "axios";
 import { BE_CONNECTION_STRING } from "../constants";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../slices/app/appSlice";
 //import SuperAdminPage from "./SuperAdminPage";
 type Props = {};
@@ -16,6 +16,12 @@ interface loginPayload {
   userId: string;
   password: string;
 }
+type tokenProps = {
+  userId: string;
+  role: string;
+  iat?: number;
+  exp?: number;
+};
 
 // login page
 const LoginPage: FC = (props: Props) => {
@@ -23,6 +29,7 @@ const LoginPage: FC = (props: Props) => {
   const dispatch = useDispatch();
 
   const [togglePassword, setTogglePassword] = useState(false);
+
   const schema = yup.object({
     userId: yup.string().required("user id is required"),
     password: yup
